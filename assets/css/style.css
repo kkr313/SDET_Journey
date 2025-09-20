@@ -1,7 +1,122 @@
 /* 
- * SDET Learning Hub - Main Stylesheet
+ * SDET Journey - Main Stylesheet
  * A premium, responsive design for SDET learning materials
  */
+
+/* Footer styles */
+footer p .fa-heart {
+  color: #ff5252;
+  animation: heartbeat 1.5s infinite;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* Solution tabs styles */
+.solution-tabs {
+  display: flex;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 15px;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  background-color: #f5f5f5;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.tab-btn.active {
+  background-color: #4a6cf7;
+  color: white;
+}
+
+.tab-content {
+  display: none;
+  position: relative;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Code container styles */
+.code-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  z-index: 10;
+}
+
+.copy-btn:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Code execution styles */
+.code-execution {
+  margin-top: 15px;
+}
+
+.language-selector {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.language-selector select {
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.code-editor {
+  width: 100%;
+  min-height: 200px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  font-family: monospace;
+  margin-bottom: 10px;
+}
+
+.run-btn {
+  background-color: #4a6cf7;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 20px;
+  cursor: pointer;
+  font-weight: 500;
+  float: right;
+}
+
+.run-btn:hover {
+  background-color: #3a5ce5;
+}
+
+.output-container {
+  margin-top: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  min-height: 100px;
+}
 
 /* ===== VARIABLES ===== */
 :root {

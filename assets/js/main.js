@@ -1,5 +1,5 @@
 /**
- * SDET Learning Hub - Main JavaScript
+ * SDET Journey - Main JavaScript
  * Handles loading and rendering of markdown content
  */
 
@@ -19,42 +19,16 @@ $(document).ready(function() {
     
     // Define available topics (in a real app, this might come from an API)
     const topics = [
-        { 
-            id: 'getting-started', 
-            title: 'Getting Started with SDET'
-        },
-        { 
-            id: 'manual-concepts', 
-            title: 'Manual Concepts'
-        },
-        { 
-            id: 'agile-methodology', 
-            title: 'Agile Methodology'
-        },
-        { 
-            id: 'ci-cd-pipelines', 
-            title: 'CI/CD Pipelines for Testing'
-        },
-        { 
-            id: 'api-testing', 
-            title: 'API Testing Fundamentals'
-        },
-        { 
-            id: 'selenium-webdriver', 
-            title: 'Selenium WebDriver Deep Dive'
-        },
-        { 
-            id: 'mobile-testing', 
-            title: 'Mobile App Testing'
-        },
-        { 
-            id: 'performance-testing', 
-            title: 'Performance Testing Basics'
-        },
-        { 
-            id: 'test-design', 
-            title: 'Test Design Patterns'
-        }
+        { id: 'getting-started', title: 'Getting Started with SDET' },
+        { id: 'manual-concepts', title: 'Manual Concepts' },
+        { id: 'agile-methodology', title: 'Agile Methodology' },
+        { id: 'ci-cd-pipelines', title: 'CI/CD Pipelines for Testing' },
+        { id: 'api-testing', title: 'API Testing Fundamentals' },
+        // { id: 'code-interview', title: 'Coding Interview Prep' },
+        { id: 'selenium-webdriver', title: 'Selenium WebDriver Deep Dive' },
+        { id: 'mobile-testing', title: 'Mobile App Testing' },
+        { id: 'performance-testing', title: 'Performance Testing Basics' },
+        { id: 'test-design', title: 'Test Design Patterns' }
     ];
 
     // Initialize the application
@@ -67,9 +41,127 @@ $(document).ready(function() {
         loadTopics();
         setupEventListeners();
         
+        // Set current year in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        
         // Load the first topic by default (if available)
         if (topics.length > 0) {
             loadMarkdownContent(topics[0].id);
+        }
+        
+        // Setup code tabs functionality
+        setupCodeTabs();
+    }
+    
+    /**
+     * Setup code tabs functionality
+     */
+    function setupCodeTabs() {
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.addedNodes.length) {
+                    initializeTabFunctionality();
+                }
+            });
+        });
+        
+        observer.observe(document.getElementById('content'), { childList: true, subtree: true });
+        document.addEventListener('DOMContentLoaded', initializeTabFunctionality);
+        initializeTabFunctionality();
+    }
+    
+    /**
+     * Initialize tab functionality for all tab elements on the page
+     */
+    function initializeTabFunctionality() {
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const copyButtons = document.querySelectorAll('.copy-btn');
+        const runButtons = document.querySelectorAll('.run-btn');
+        
+        // Tab switching
+        if (tabButtons.length > 0) {
+            tabButtons.forEach(button => button.replaceWith(button.cloneNode(true)));
+            document.querySelectorAll('.tab-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.getAttribute('data-tab');
+                    const tabsContainer = button.closest('.solution-tabs');
+                    
+                    if (tabsContainer) {
+                        const relatedButtons = tabsContainer.querySelectorAll('.tab-btn');
+                        const relatedContents = tabsContainer.querySelectorAll('.tab-content');
+                        
+                        relatedButtons.forEach(btn => btn.classList.remove('active'));
+                        relatedContents.forEach(content => content.classList.remove('active'));
+                        
+                        button.classList.add('active');
+                        tabsContainer.querySelector(`#${tabId}`).classList.add('active');
+                    }
+                });
+            });
+        }
+            
+        // Copy code functionality
+        if (copyButtons.length > 0) {
+            copyButtons.forEach(button => button.replaceWith(button.cloneNode(true)));
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const codeBlock = button.previousElementSibling.querySelector('code');
+                    const code = codeBlock.textContent;
+                    
+                    navigator.clipboard.writeText(code)
+                        .then(() => {
+                            const originalText = button.textContent;
+                            button.textContent = 'Copied!';
+                            setTimeout(() => button.textContent = originalText, 2000);
+                        })
+                        .catch(err => console.error('Failed to copy code: ', err));
+                });
+            });
+        }
+        
+        // Run code functionality
+        if (runButtons.length > 0) {
+            runButtons.forEach(button => button.replaceWith(button.cloneNode(true)));
+            document.querySelectorAll('.run-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabContainer = button.closest('.tab-content');
+                    const codeEditor = tabContainer.querySelector('.code-editor');
+                    const outputContainer = tabContainer.querySelector('.output-container');
+                    const languageSelector = tabContainer.querySelector('.language-selector select');
+                    
+                    if (codeEditor && outputContainer) {
+                        const code = codeEditor.value;
+                        const language = languageSelector ? languageSelector.value : 'javascript';
+                        
+                        outputContainer.innerHTML = '<p>Running code...</p>';
+                        
+                        try {
+                            if (language === 'javascript') {
+                                const originalConsoleLog = console.log;
+                                let output = '';
+
+                                console.log = function(...args) {
+                                    output += args.join(' ') + '<br>';
+                                    originalConsoleLog.apply(console, args);
+                                };
+
+                                try {
+                                    eval(code);
+                                } catch (evalError) {
+                                    output += `<p class="error">Runtime Error: ${evalError.message}</p>`;
+                                }
+
+                                console.log = originalConsoleLog;
+                                outputContainer.innerHTML = output || '<p>Code executed successfully with no output.</p>';
+                            } else {
+                                outputContainer.innerHTML = '<p>Python execution is simulated in this demo. In a real implementation, this would require a backend service.</p>';
+                            }
+                        } catch (error) {
+                            outputContainer.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+                        }
+                    }
+                });
+            });
         }
     }
 
@@ -81,18 +173,10 @@ $(document).ready(function() {
         $topicsList.empty();
 
         topics.forEach(topic => {
-            // Create topic item
-            const $topicItem = $(`
-                <li class="topic-item" data-id="${topic.id}">
-                    <span class="topic-title">${topic.title}</span>
-                </li>
-            `);
-            
-            // Add to the topics list
+            const $topicItem = $(`<li class="topic-item" data-id="${topic.id}"><span class="topic-title">${topic.title}</span></li>`);
             $topicsList.append($topicItem);
         });
 
-        // Set the first topic as active
         if (topics.length > 0) {
             $topicsList.find('li.topic-item:first-child').addClass('active');
         }
@@ -105,15 +189,9 @@ $(document).ready(function() {
         // Topic selection
         $('#topics-list').on('click', 'li.topic-item', function() {
             const topicId = $(this).data('id');
-            
-            // Update active state
             $('#topics-list li').removeClass('active');
             $(this).addClass('active');
-            
-            // Load the selected markdown content
             loadMarkdownContent(topicId);
-            
-            // Reset scroll position to top
             $('#content').scrollTop(0);
             window.scrollTo(0, 0);
         });
@@ -127,26 +205,17 @@ $(document).ready(function() {
         // Search functionality
         $('#search-input').on('input', function() {
             const searchTerm = $(this).val().toLowerCase();
-            
-            // Search through all topics
             $('.topic-item').each(function() {
-                const itemText = $(this).text().toLowerCase();
                 const $item = $(this);
-                
-                if (itemText.includes(searchTerm)) {
-                    $item.show();
-                } else {
-                    $item.hide();
-                }
+                $item.toggle($item.text().toLowerCase().includes(searchTerm));
             });
         });
 
-        // Close sidebar when clicking outside on mobile
+        // Close sidebar on outside click (mobile)
         $(document).on('click', function(e) {
             if (window.innerWidth <= 768) {
                 const $sidebar = $('#sidebar');
                 const $menuToggle = $('#menu-toggle');
-                
                 if (!$sidebar.is(e.target) && 
                     $sidebar.has(e.target).length === 0 && 
                     !$menuToggle.is(e.target) && 
@@ -160,28 +229,15 @@ $(document).ready(function() {
         // Theme toggle
         $('#theme-toggle').on('click', function() {
             $('body').toggleClass('light-theme');
-            
-            // Save theme preference
             const isLightTheme = $('body').hasClass('light-theme');
             localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
-            
-            // Update toggle icon
             const $icon = $(this).find('i');
-            if (isLightTheme) {
-                $icon.removeClass('fa-sun').addClass('fa-moon');
-            } else {
-                $icon.removeClass('fa-moon').addClass('fa-sun');
-            }
+            $icon.toggleClass('fa-sun fa-moon');
         });
 
         // Font size controls
-        $('#font-decrease').on('click', function() {
-            changeFontSize(-1);
-        });
-        
-        $('#font-increase').on('click', function() {
-            changeFontSize(1);
-        });
+        $('#font-decrease').on('click', () => changeFontSize(-1));
+        $('#font-increase').on('click', () => changeFontSize(1));
         
         // Load saved theme preference
         const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -191,46 +247,30 @@ $(document).ready(function() {
         }
         
         // Load saved font size
-        const savedFontSize = localStorage.getItem('fontSize') || 0;
-        if (savedFontSize !== 0) {
-            changeFontSize(parseInt(savedFontSize));
-        }
+        const savedFontSize = parseInt(localStorage.getItem('fontSize') || "0", 10);
+        if (savedFontSize !== 0) changeFontSize(savedFontSize);
     }
     
     /**
      * Change font size of content
-     * @param {number} change - Amount to change (positive to increase, negative to decrease)
      */
     function changeFontSize(change) {
-        const currentSize = parseInt(localStorage.getItem('fontSize') || 0);
+        const currentSize = parseInt(localStorage.getItem('fontSize') || "0", 10);
         const newSize = Math.max(-1, Math.min(1, currentSize + change));
-        
-        // Save the new size
         localStorage.setItem('fontSize', newSize);
-        
-        // Apply the font size to body
         document.body.classList.remove('font-size-small', 'font-size-normal', 'font-size-large');
-        
-        if (newSize === -1) {
-            document.body.classList.add('font-size-small');
-        } else if (newSize === 1) {
-            document.body.classList.add('font-size-large');
-        } else {
-            document.body.classList.add('font-size-normal');
-        }
+        if (newSize === -1) document.body.classList.add('font-size-small');
+        else if (newSize === 1) document.body.classList.add('font-size-large');
+        else document.body.classList.add('font-size-normal');
     }
 
     /**
      * Load and render markdown content
-     * @param {string} topicId - The ID of the topic to load
      */
     function loadMarkdownContent(topicId) {
         const $content = $('#markdown-content');
-        
-        // Show loading state
         $content.html('<div class="loading-content"><p>Loading content...</p></div>');
         
-        // Map topic IDs to their correct file names
         const topicFileMap = {
             'getting': 'getting-started',
             'test': 'test-automation-frameworks',
@@ -244,19 +284,12 @@ $(document).ready(function() {
             'test-design': 'test-design'
         };
         
-        // Get the base topic ID for file path
         let baseTopicId = topicId;
+        if (topicFileMap[baseTopicId]) baseTopicId = topicFileMap[baseTopicId];
         
-        // Check if we need to map this topic ID to a different filename
-        if (topicFileMap[baseTopicId]) {
-            baseTopicId = topicFileMap[baseTopicId];
-        }
-        
-        // Check if the file exists in our known files list
-        const availableFiles = ['getting-started', 'test-automation-frameworks', 'ci-cd-pipelines','agile-methodology','manual-concepts', 'api-testing'];
+        const availableFiles = ['getting-started', 'test-automation-frameworks', 'ci-cd-pipelines','agile-methodology','manual-concepts', 'api-testing', 'code-interview'];
         const fileExists = availableFiles.includes(baseTopicId);
         
-        // If file doesn't exist, show a friendly message
         if (!fileExists) {
             $content.html(`
                 <div class="content-coming-soon">
@@ -268,72 +301,49 @@ $(document).ready(function() {
             return;
         }
         
-        // Fetch the markdown file
         $.ajax({
             url: `assets/data/${baseTopicId}.md`,
             dataType: 'text',
             success: function(markdown) {
-                // Parse markdown to HTML using marked.js
                 const html = marked.parse(markdown);
-                
-                // Update the content area with the parsed HTML
                 $content.html(html);
                 
-                // Check if this is a subtopic by looking for a hyphen in the ID
                 const isSubtopic = topicId.includes('-') && topicId !== baseTopicId;
-                
-                // If it's a subtopic, expand its parent topic
                 if (isSubtopic) {
-                    // Find the parent topic
                     const $parentTopic = $(`#topics-list li[data-id="${baseTopicId}"]`);
                     const $subtopicsList = $parentTopic.next('.subtopics');
                     const $toggleIcon = $parentTopic.find('.toggle-icon');
                     
-                    // Expand the subtopics list
                     $subtopicsList.addClass('expanded');
                     $toggleIcon.addClass('rotated');
                     
-                    // Make sure the subtopic is visible and highlighted
                     const $subtopicItem = $(`#topics-list li[data-id="${topicId}"]`);
                     $subtopicItem.addClass('active').show();
                     
-                    // Extract the section ID from the subtopic ID (part after the base topic ID)
                     const sectionId = topicId.substring(baseTopicId.length + 1);
-                    
-                    // Try to find a heading with that ID or similar text
                     const $section = $(`#markdown-content h1[id="${sectionId}"], #markdown-content h2[id="${sectionId}"], #markdown-content h3[id="${sectionId}"]`);
                     
                     if ($section.length) {
-                        // Scroll to the section with a slight delay to ensure content is rendered
                         setTimeout(() => {
                             $section[0].scrollIntoView({ behavior: 'smooth' });
-                            
-                            // Highlight the section briefly
                             $section.addClass('highlight-section');
-                            setTimeout(() => {
-                                $section.removeClass('highlight-section');
-                            }, 2000);
+                            setTimeout(() => $section.removeClass('highlight-section'), 2000);
                         }, 100);
                     }
                 } else {
-                    // Scroll to top for main topics
                     $content.scrollTop(0);
                 }
                 
-                // Apply syntax highlighting to code blocks if hljs is available
                 if (typeof hljs !== 'undefined') {
-                    document.querySelectorAll('pre code').forEach((block) => {
-                        hljs.highlightElement(block);
-                    });
+                    document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
                 }
             },
             error: function(xhr, status, error) {
-                // Handle error
                 $content.html(`
                     <div class="error-message">
                         <h2>Error Loading Content</h2>
                         <p>Sorry, we couldn't load the requested content. Please try again later.</p>
-                        <p>Error details: ${error}</p>
+                        <p>Error details: ${status} - ${error}</p>
                     </div>
                 `);
             }
