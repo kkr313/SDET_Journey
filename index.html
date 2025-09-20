@@ -1,584 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>QA Journey - Interactive Learning Platform</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"><style>
-    * {
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      margin: 0;
-      padding: 0;
-      color: #2d3748;
-      line-height: 1.6;
-    }
-    
-    .app-container {
-      display: flex;
-      min-height: 100vh;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-    }
-      .sidebar {
-      background: linear-gradient(180deg, #2d3748 0%, #1a202c 100%);
-      color: #fff;
-      width: 280px;
-      min-width: 280px;
-      padding: 0;
-      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
-      position: fixed;
-      height: 100vh;
-      overflow-y: auto;
-      z-index: 99;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      left: 0;
-      top: 0;
-      border-right: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .sidebar.closed {
-      transform: translateX(-100%);
-      box-shadow: none;
-    }
-    
-    .sidebar h2 {
-      font-size: 1.4em;
-      font-weight: 700;
-      margin: 0;
-      padding: 28px 20px 20px 20px;
-      letter-spacing: 0.5px;
-      background: rgba(255, 255, 255, 0.08);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-      text-align: center;
-      color: #e2e8f0;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-    
-    .sidebar ul {
-      list-style: none;
-      padding: 20px 0;
-      margin: 0;
-    }
-    
-    .sidebar li {
-      margin: 0;
-      position: relative;
-    }
-    
-    .sidebar a {
-      color: #cbd5e0;
-      text-decoration: none;
-      font-size: 0.95em;
-      padding: 14px 20px 14px 24px;
-      display: block;
-      transition: all 0.3s ease;
-      border-left: 3px solid transparent;
-      font-weight: 500;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .sidebar a::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      height: 100%;
-      width: 0;
-      background: rgba(66, 153, 225, 0.1);
-      transition: width 0.3s ease;
-    }
-    
-    .sidebar a:hover, .sidebar a.active {
-      background: rgba(255, 255, 255, 0.12);
-      color: #fff;
-      border-left-color: #4299e1;
-      padding-left: 28px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-    
-    .sidebar a:hover::before, .sidebar a.active::before {
-      width: 100%;
-    }
-    
-    #sidebarToggle {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      background: linear-gradient(135deg, #4299e1, #3182ce);
-      color: #fff;
-      border: none;
-      padding: 12px 16px;
-      border-radius: 12px;
-      cursor: pointer;
-      z-index: 100;
-      font-size: 18px;
-      box-shadow: 0 4px 15px rgba(66, 153, 225, 0.3);
-      transition: all 0.2s ease;
-      backdrop-filter: blur(10px);
-    }
-    
-    #sidebarToggle:hover {
-      background: linear-gradient(135deg, #3182ce, #2c5aa0);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(66, 153, 225, 0.4);
-    }
-      .main-content {
-      margin-left: 280px;
-      padding: 0;
-      width: calc(100% - 280px);
-      background: transparent;
-      min-height: 100vh;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow-x: hidden;
-    }
-    
-    .sidebar.closed ~ .main-content {
-      margin-left: 0;
-      width: 100%;
-    }
-    
-    #output {
-      max-width: 1000px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 30px 24px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-      margin-top: 16px;
-      margin-bottom: 16px;
-      box-sizing: border-box;
-    }
-      /* Responsive Design */
-    @media (max-width: 1200px) {
-      .sidebar {
-        width: 260px;
-        min-width: 260px;
-      }
-      .main-content {
-        margin-left: 260px;
-        width: calc(100% - 260px);
-      }
-      #output {
-        padding: 24px 20px;
-        margin: 12px;
-        max-width: 95%;
-      }
-    }
-      @media (max-width: 768px) {
-      .sidebar {
-        width: 100%;
-        min-width: unset;
-        transform: translateX(-100%);
-        z-index: 999;
-      }
-      .sidebar.closed {
-        transform: translateX(-100%);
-      }
-      .sidebar:not(.closed) {
-        transform: translateX(0);
-      }
-      .sidebar h2 {
-        padding: 24px 16px 16px 16px;
-        font-size: 1.3em;
-      }
-      .sidebar a {
-        padding: 12px 16px 12px 20px;
-        font-size: 0.9em;
-      }
-      .sidebar a:hover, .sidebar a.active {
-        padding-left: 24px;
-      }
-      .main-content {
-        margin-left: 0;
-        width: 100%;
-        padding: 0 8px;
-      }
-      #output {
-        padding: 20px 16px;
-        margin: 8px 0;
-        border-radius: 8px;
-        max-width: 100%;
-      }
-      #sidebarToggle {
-        top: 12px;
-        left: 12px;
-        padding: 8px 12px;
-        font-size: 16px;
-        z-index: 1000;
-      }
-    }
-      @media (max-width: 480px) {
-      .main-content {
-        padding: 0 4px;
-      }
-      #output {
-        padding: 16px 12px;
-        margin: 4px 0;
-        border-radius: 6px;
-      }
-      .sidebar h2 {
-        padding: 18px 12px 14px 12px;
-        font-size: 1.2em;
-      }
-      .sidebar a {
-        padding: 10px 12px 10px 16px;
-        font-size: 0.85em;
-      }
-      .sidebar a:hover, .sidebar a.active {
-        padding-left: 20px;
-      }
-      #sidebarToggle {
-        top: 8px;
-        left: 8px;
-        padding: 6px 10px;
-        font-size: 14px;
-      }
-      .markdown-content {
-        font-size: 14px;
-      }
-      .markdown-content h1 {
-        font-size: 1.6em;
-      }
-      .markdown-content h2 {
-        font-size: 1.3em;
-      }
-      .markdown-content h3 {
-        font-size: 1.1em;
-      }
-      .markdown-content ul, .markdown-content ol {
-        padding-left: 20px;
-        margin: 16px 0;
-      }
-      .markdown-content li {
-        padding-left: 12px;
-        margin-bottom: 10px;
-      }
-    }/* Enhanced Markdown Styling */
-    .markdown-content {
-      font-size: 15px;
-      line-height: 1.7;
-      color: #2d3748;
-    }
-    
-    .markdown-content h1 {
-      color: #1a202c;
-      font-size: 1.8em;
-      font-weight: 700;
-      margin: 0 0 24px 0;
-      padding-bottom: 12px;
-      border-bottom: 2px solid #4299e1;
-      background: linear-gradient(135deg, #4299e1, #667eea);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    
-    .markdown-content h2 {
-      color: #2d3748;
-      font-size: 1.4em;
-      font-weight: 600;
-      margin: 32px 0 16px 0;
-      padding-left: 12px;
-      border-left: 3px solid #4299e1;
-      position: relative;
-    }
-    
-    .markdown-content h3 {
-      color: #4a5568;
-      font-size: 1.2em;
-      font-weight: 600;
-      margin: 24px 0 12px 0;
-    }
-      .markdown-content h4, .markdown-content h5, .markdown-content h6 {
-      color: #718096;
-      font-weight: 600;
-      margin: 20px 0 10px 0;
-      font-size: 1.1em;
-    }
-    
-    .markdown-content p {
-      margin-bottom: 16px;
-      text-align: justify;
-      line-height: 1.6;
-    }
-    
-    .markdown-content code {
-      background: linear-gradient(135deg, #edf2f7, #e2e8f0);
-      color: #d53f8c;
-      padding: 3px 6px;
-      border-radius: 4px;
-      font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
-      font-size: 0.85em;
-      font-weight: 500;
-      border: 1px solid #cbd5e0;
-    }
-    
-    .markdown-content pre {
-      background: linear-gradient(135deg, #1a202c, #2d3748);
-      color: #e2e8f0;
-      padding: 24px;
-      border-radius: 12px;
-      overflow-x: auto;
-      margin: 24px 0;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      border: 1px solid #4a5568;
-    }
-    
-    .markdown-content pre code {
-      background: none;
-      color: inherit;
-      padding: 0;
-      border-radius: 0;
-      border: none;
-      font-size: 0.95em;
-    }
-      .markdown-content ul, .markdown-content ol {
-      margin: 18px 0 18px 0;
-      padding-left: 28px;
-      position: relative;
-    }
-    
-    .markdown-content ul {
-      list-style: none;
-    }
-    
-    .markdown-content ol {
-      list-style: none;
-      counter-reset: list-counter;
-    }
-    
-    .markdown-content li {
-      margin-bottom: 12px;
-      position: relative;
-      padding-left: 16px;
-      line-height: 1.6;
-    }
-    
-    .markdown-content ul li::before {
-      content: "●";
-      color: #4299e1;
-      font-weight: bold;
-      position: absolute;
-      left: -20px;
-      font-size: 1.1em;
-      top: 2px;
-    }
-    
-    .markdown-content ol li {
-      counter-increment: list-counter;
-    }
-    
-    .markdown-content ol li::before {
-      content: counter(list-counter) ".";
-      color: #4299e1;
-      font-weight: 600;
-      position: absolute;
-      left: -24px;
-      font-size: 0.9em;
-      top: 0;
-      min-width: 20px;
-    }
-    
-    .markdown-content ul ul, .markdown-content ol ul, 
-    .markdown-content ul ol, .markdown-content ol ol {
-      margin: 8px 0;
-      padding-left: 24px;
-    }
-    
-    .markdown-content ul ul li::before {
-      content: "◦";
-      color: #667eea;
-      font-size: 1em;
-    }
-    
-    .markdown-content ul ul ul li::before {
-      content: "▪";
-      color: #764ba2;
-      font-size: 0.9em;
-    }
-    
-    .markdown-content blockquote {
-      background: linear-gradient(135deg, #edf2f7, #e2e8f0);
-      border-left: 4px solid #4299e1;
-      margin: 24px 0;
-      padding: 20px 24px;
-      border-radius: 8px;
-      font-style: italic;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-    
-    .markdown-content table {
-      border-collapse: collapse;
-      width: 100%;
-      margin: 32px 0;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-    
-    .markdown-content th {
-      background: linear-gradient(135deg, #4299e1, #3182ce);
-      color: white;
-      padding: 16px;
-      text-align: left;
-      font-weight: 600;
-      font-size: 0.95em;
-      letter-spacing: 0.5px;
-    }
-    
-    .markdown-content td {
-      padding: 16px;
-      border-bottom: 1px solid #e2e8f0;
-      background: #fff;
-    }
-    
-    .markdown-content tr:nth-child(even) td {
-      background: #f7fafc;
-    }
-    
-    .markdown-content tr:hover td {
-      background: #edf2f7;
-      transition: background-color 0.2s ease;
-    }
-    
-    .markdown-content hr {
-      border: none;
-      height: 2px;
-      background: linear-gradient(135deg, #4299e1, #667eea);
-      margin: 48px 0;
-      border-radius: 1px;
-    }
-    
-    .markdown-content a {
-      color: #4299e1;
-      text-decoration: none;
-      font-weight: 500;
-      border-bottom: 2px solid transparent;
-      transition: all 0.2s ease;
-    }
-    
-    .markdown-content a:hover {
-      color: #3182ce;
-      border-bottom-color: #4299e1;
-    }
-    
-    .markdown-content strong {
-      color: #2d3748;
-      font-weight: 700;
-    }
-    
-    .markdown-content em {
-      color: #4a5568;
-      font-style: italic;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDET Learning Hub</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3b82f6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="assets/images/icon-192x192.png">
 </head>
 <body>
-  <div class="app-container">
-    <button id="sidebarToggle">☰</button>    <nav class="sidebar" id="sidebar">
-      <h2>QA Journey</h2>
-      <ul id="fileList">
-        <li><a href="#" data-file="Topics/Manual Concepts.md">Manual Concepts</a></li>
-        <li><a href="#" data-file="Topics/Agile Methodology.md">Agile Methodology</a></li>
-      </ul>
-    </nav>
-    <main class="main-content">
-      <div id="output" class="markdown-content"></div>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1><i class="fas fa-code"></i> SDET Learning Hub</h1>
+            </div>
+            <div class="header-controls">
+                <button id="theme-toggle" class="control-btn" title="Toggle Light/Dark Theme">
+                    <i class="fas fa-sun"></i>
+                </button>
+                <button id="font-decrease" class="control-btn" title="Decrease Font Size">
+                    <i class="fas fa-font"></i><i class="fas fa-minus"></i>
+                </button>
+                <button id="font-increase" class="control-btn" title="Increase Font Size">
+                    <i class="fas fa-font"></i><i class="fas fa-plus"></i>
+                </button>
+                <button id="menu-toggle" class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <aside id="sidebar" class="sidebar">
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Search topics...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <nav>
+                    <h2>Topics</h2>
+                    <ul id="topics-list">
+                        <!-- Topics will be loaded dynamically -->
+                        <li class="loading">Loading topics...</li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <section id="content" class="content">
+                <div id="markdown-content">
+                    <div class="welcome-message">
+                        <h2>Welcome to SDET Learning Hub</h2>
+                        <p>Select a topic from the sidebar to get started.</p>
+                        <div class="icon-container">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
     </main>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script>
-    // Sidebar toggle logic
-    const sidebar = document.getElementById('sidebar');
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    sidebarToggle.onclick = function() {
-      sidebar.classList.toggle('closed');
-      // When opening, focus the first topic for accessibility
-      if (!sidebar.classList.contains('closed')) {
-        const firstLink = document.querySelector('#fileList a');
-        if (firstLink) firstLink.focus();
-      }
-    };    // Store loaded content
-    let contentCache = {};
-    let currentFile = '';
 
-    // Load initial content
-    loadContent('Topics/Manual Concepts.md');
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 SDET Learning Hub. All rights reserved.</p>
+        </div>
+    </footer>
 
-    // Load markdown content
-    function loadContent(filePath) {
-      if (contentCache[filePath]) {
-        displayContent(contentCache[filePath]);
-        return;
-      }
-
-      document.getElementById('output').innerHTML = '<div style="text-align: center; padding: 40px;"><div style="color: #4299e1;">Loading...</div></div>';
-      
-      fetch(filePath)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          return response.text();
-        })
-        .then(md => {
-          contentCache[filePath] = md;
-          currentFile = filePath;
-          displayContent(md);
-          loadSidebar();
-        })
-        .catch(error => {
-          console.error('Error loading markdown file:', error);
-          document.getElementById('output').innerHTML = `
-            <div style="text-align: center; padding: 40px;">
-              <h2 style="color: #e53e3e;">Error Loading Content</h2>
-              <p>Could not load the file: <strong>${filePath}</strong></p>
-              <p style="color: #718096; font-size: 0.9em;">Please check if the file exists and is accessible.</p>
-            </div>`;
-        });
-    }
-
-    function displayContent(markdown) {
-      document.getElementById('output').innerHTML = marked.parse(markdown);
-    }
-
-    // Sidebar navigation
-    function loadSidebar() {
-      const fileLinks = document.querySelectorAll('#fileList a');
-      
-      fileLinks.forEach(link => {
-        link.onclick = function(e) {
-          e.preventDefault();
-          const filePath = this.getAttribute('data-file');
-          loadContent(filePath);
-          setActiveFile(this);
-          
-          // Close sidebar on mobile after selection
-          if (window.innerWidth <= 768) {
-            sidebar.classList.add('closed');
-          }
-        };
-        
-        // Set active for current file
-        if (link.getAttribute('data-file') === currentFile) {
-          setActiveFile(link);
-        }
-      });
-    }
-
-    function setActiveFile(activeLink) {
-      document.querySelectorAll('#fileList a').forEach(a => a.classList.remove('active'));
-      activeLink.classList.add('active');
-      currentFile = activeLink.getAttribute('data-file');
-    }
-  </script>
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="assets/js/main.js"></script>
 </body>
 </html>
