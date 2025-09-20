@@ -1,6 +1,6 @@
 /**
  * SDET Learning Hub - Main JavaScript
- * Handles loading and rendering of markdown content
+ * Handles loading and rendering of markdown content, tab system, and code execution
  */
 
 $(document).ready(function() {
@@ -16,6 +16,39 @@ $(document).ready(function() {
                 });
         });
     }
+    
+    // Add PWA install prompt
+    let deferredPrompt;
+    const installButton = document.createElement('button');
+    installButton.style.display = 'none';
+    installButton.classList.add('install-button');
+    installButton.textContent = 'Install App';
+    document.querySelector('.header-controls').prepend(installButton);
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        e.preventDefault();
+        // Stash the event so it can be triggered later
+        deferredPrompt = e;
+        // Update UI to notify the user they can add to home screen
+        installButton.style.display = 'block';
+    });
+    
+    installButton.addEventListener('click', (e) => {
+        // Hide our user interface that shows our A2HS button
+        installButton.style.display = 'none';
+        // Show the prompt
+        deferredPrompt.prompt();
+        // Wait for the user to respond to the prompt
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted the A2HS prompt');
+            } else {
+                console.log('User dismissed the A2HS prompt');
+            }
+            deferredPrompt = null;
+        });
+    });
     
     // Define available topics (in a real app, this might come from an API)
     const topics = [
@@ -38,6 +71,14 @@ $(document).ready(function() {
         { 
             id: 'api-testing', 
             title: 'API Testing Fundamentals'
+        },
+        { 
+            id: 'test-automation-frameworks', 
+            title: 'Test Automation Frameworks'
+        },
+        { 
+            id: 'code-interview', 
+            title: 'Coding Interview Questions'
         },
         { 
             id: 'selenium-webdriver', 
@@ -66,6 +107,9 @@ $(document).ready(function() {
     function initApp() {
         loadTopics();
         setupEventListeners();
+        
+        // Set current year in footer
+        $('#current-year').text(new Date().getFullYear());
         
         // Load the first topic by default (if available)
         if (topics.length > 0) {
@@ -253,7 +297,7 @@ $(document).ready(function() {
         }
         
         // Check if the file exists in our known files list
-        const availableFiles = ['getting-started', 'test-automation-frameworks', 'ci-cd-pipelines','agile-methodology','manual-concepts', 'api-testing'];
+        const availableFiles = ['getting-started', 'test-automation-frameworks', 'ci-cd-pipelines','agile-methodology','manual-concepts', 'api-testing', 'code-interview'];
         const fileExists = availableFiles.includes(baseTopicId);
         
         // If file doesn't exist, show a friendly message
@@ -273,11 +317,14 @@ $(document).ready(function() {
             url: `assets/data/${baseTopicId}.md`,
             dataType: 'text',
             success: function(markdown) {
-                // Parse markdown to HTML using marked.js
-                const html = marked.parse(markdown);
+                // Process markdown with custom extensions
+                const html = processMarkdown(markdown);
                 
                 // Update the content area with the parsed HTML
                 $content.html(html);
+                
+                // Initialize tab system
+                initTabSystem();
                 
                 // Check if this is a subtopic by looking for a hyphen in the ID
                 const isSubtopic = topicId.includes('-') && topicId !== baseTopicId;
@@ -326,6 +373,11 @@ $(document).ready(function() {
                         hljs.highlightElement(block);
                     });
                 }
+                
+                // Initialize Mermaid diagrams if available
+                if (typeof mermaid !== 'undefined') {
+                    mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+                }
             },
             error: function(xhr, status, error) {
                 // Handle error
@@ -338,5 +390,390 @@ $(document).ready(function() {
                 `);
             }
         });
+    }
+    
+    /**
+     * Process markdown content with custom extensions
+     * @param {string} markdown - The markdown content to process
+     * @returns {string} - The processed HTML
+     */
+    function processMarkdown(markdown) {
+        // Configure marked options
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+            headerIds: true
+        });
+
+        // Custom renderer for code blocks
+        const renderer = new marked.Renderer();
+        
+        // Store the original code renderer
+        const originalCodeRenderer = renderer.code;
+        
+        // Custom code renderer
+        renderer.code = function(code, language) {
+            if (language === 'mermaid') {
+                return `<div class="mermaid">${code}</div>`;
+            }
+            return originalCodeRenderer.call(this, code, language);
+        };
+
+        // Process the markdown
+        let html = marked.parse(markdown, { renderer });
+        
+        // Process custom tab elements
+        html = processTabElements(html);
+        
+        // Process code execution blocks
+        html = processCodeExecutionBlocks(html);
+        
+        return html;
+    }
+    
+    /**
+     * Process custom tab elements in HTML
+     * @param {string} html - The HTML content
+     * @returns {string} - Processed HTML with tab system
+     */
+    function processTabElements(html) {
+        // Regular expression to find tab elements
+        const tabsRegex = /<tabs>([\s\S]*?)<\/tabs>/g;
+        
+        return html.replace(tabsRegex, function(match, tabsContent) {
+            // Extract individual tabs
+            const tabRegex = /<tab name="(.*?)">([\s\S]*?)<\/tab>/g;
+            let tabMatch;
+            let tabNavItems = '';
+            let tabContentItems = '';
+            let index = 0;
+            
+            // Generate unique ID for this tab group
+            const tabGroupId = 'tabs-' + Math.random().toString(36).substr(2, 9);
+            
+            // Process each tab
+            while ((tabMatch = tabRegex.exec(tabsContent)) !== null) {
+                const tabName = tabMatch[1];
+                const tabContent = tabMatch[2];
+                const tabId = `${tabGroupId}-tab-${index}`;
+                const isActive = index === 0 ? 'active' : '';
+                
+                tabNavItems += `<button class="tab-button ${isActive}" data-tab="${tabId}">${tabName}</button>`;
+                tabContentItems += `<div id="${tabId}" class="tab-content ${isActive}">${tabContent}</div>`;
+                
+                index++;
+            }
+            
+            // Return the complete tab system HTML
+            return `
+                <div class="tabs" id="${tabGroupId}">
+                    <div class="tab-nav">${tabNavItems}</div>
+                    ${tabContentItems}
+                </div>
+            `;
+        });
+    }
+    
+    /**
+     * Process code execution blocks
+     * @param {string} html - The HTML content
+     * @returns {string} - Processed HTML with code execution blocks
+     */
+    function processCodeExecutionBlocks(html) {
+        // Regular expression to find code execution blocks
+        const codeExecRegex = /<code-execution language="(.*?)">([\s\S]*?)<\/code-execution>/g;
+        
+        return html.replace(codeExecRegex, function(match, language, code) {
+            // Generate unique ID for this code execution block
+            const blockId = 'code-exec-' + Math.random().toString(36).substr(2, 9);
+            
+            return `
+                <div class="code-execution" id="${blockId}" data-language="${language}">
+                    <pre><code class="language-${language}">${escapeHtml(code)}</code></pre>
+                    <button class="run-button" data-target="${blockId}" onclick="executeCode('${blockId}', '${language}')">Run Code</button>
+                    <div class="code-execution-result" id="${blockId}-result"></div>
+                </div>
+            `;
+        });
+    }
+    
+    /**
+     * Execute code from the Result tab or code execution blocks
+     * @param {string|Element} inputIdOrElement - The input element or ID
+     * @param {string} resultIdOrLanguage - The result area ID or language
+     */
+    function executeCode(inputIdOrElement, resultIdOrLanguage) {
+        let code, language, resultArea;
+        
+        // Handle different calling scenarios
+        if (typeof inputIdOrElement === 'string' && inputIdOrElement.startsWith('code-input')) {
+            // Called from Result tab
+            const codeInputId = inputIdOrElement;
+            const resultAreaId = resultIdOrLanguage;
+            
+            // Get the code and language
+            const codeInput = document.getElementById(codeInputId);
+            const languageSelector = document.getElementById(codeInputId === 'code-input' ? 'language-selector' : 'language-selector-2');
+            
+            if (!codeInput || !languageSelector) {
+                console.error('Code input or language selector not found');
+                return;
+            }
+            
+            code = codeInput.value;
+            language = languageSelector.value;
+            resultArea = document.getElementById(resultAreaId);
+        } else if (typeof inputIdOrElement === 'string' && inputIdOrElement.startsWith('code-exec-')) {
+            // Called from code execution block
+            const blockId = inputIdOrElement;
+            language = resultIdOrLanguage;
+            
+            // Get the code from the pre>code element
+            const codeBlock = document.querySelector(`#${blockId} pre code`);
+            if (!codeBlock) {
+                console.error('Code block not found');
+                return;
+            }
+            
+            code = codeBlock.textContent;
+            resultArea = document.getElementById(`${blockId}-result`);
+        } else {
+            console.error('Invalid parameters for executeCode');
+            return;
+        }
+        
+        if (!resultArea) {
+            console.error('Result area not found');
+            return;
+        }
+        
+        // Show loading message
+        resultArea.innerHTML = 'Executing code...';
+        resultArea.style.display = 'block';
+        resultArea.classList.remove('execution-error');
+        resultArea.classList.remove('execution-success');
+        
+        // Simulate code execution (in a real app, this would send to a backend)
+        setTimeout(() => {
+            try {
+                let result;
+                
+                if (language === 'javascript') {
+                    // For JavaScript, we can actually execute it in the browser
+                    try {
+                        // Capture console.log output
+                        const originalLog = console.log;
+                        let logs = [];
+                        
+                        console.log = function() {
+                            logs.push(Array.from(arguments).join(' '));
+                            originalLog.apply(console, arguments);
+                        };
+                        
+                        // Execute the code
+                        eval(code);
+                        
+                        // Restore console.log
+                        console.log = originalLog;
+                        
+                        // Display the logs
+                        result = logs.join('<br>');
+                        resultArea.classList.add('execution-success');
+                    } catch (error) {
+                        result = 'Error: ' + error.message;
+                        resultArea.classList.add('execution-error');
+                    }
+                } else if (language === 'python') {
+                    // For Python, we would need a backend service
+                    // This is a simulation
+                    if (code.includes('reverse_string')) {
+                        result = "['o', 'l', 'l', 'e', 'h']";
+                        resultArea.classList.add('execution-success');
+                    } else if (code.includes('find_duplicate')) {
+                        result = "2";
+                        resultArea.classList.add('execution-success');
+                    } else {
+                        result = "Simulated Python execution result";
+                        resultArea.classList.add('execution-success');
+                    }
+                } else {
+                    result = `Execution for ${language} is not supported in this demo.`;
+                    resultArea.classList.add('execution-error');
+                }
+                
+                resultArea.innerHTML = result;
+            } catch (error) {
+                resultArea.innerHTML = 'Error: ' + error.message;
+                resultArea.classList.add('execution-error');
+            }
+        }, 500);
+    }
+    
+    // Make executeCode function globally available
+    window.mainExecuteCode = executeCode;
+    
+    /**
+     * Copy code to clipboard
+     * @param {Element} button - The button that was clicked
+     */
+    function copyCode(button) {
+        // Find the closest pre > code element
+        const codeBlock = button.parentElement.querySelector('pre code') || 
+                          button.parentElement.querySelector('code');
+        
+        if (!codeBlock) {
+            console.error('No code block found to copy');
+            return;
+        }
+        
+        // Get the text content
+        const codeText = codeBlock.textContent;
+        
+        // Create a temporary textarea to copy from
+        const textarea = document.createElement('textarea');
+        textarea.value = codeText;
+        textarea.style.position = 'fixed';  // Prevent scrolling to the bottom
+        document.body.appendChild(textarea);
+        textarea.select();
+        
+        try {
+            // Execute the copy command
+            document.execCommand('copy');
+            
+            // Visual feedback
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            button.style.backgroundColor = 'var(--primary-color)';
+            button.style.color = 'white';
+            
+            // Reset after a short delay
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.backgroundColor = '';
+                button.style.color = '';
+            }, 1500);
+        } catch (err) {
+            console.error('Failed to copy code: ', err);
+        } finally {
+            // Clean up
+            document.body.removeChild(textarea);
+        }
+    }
+    
+    /**
+     * Escape HTML special characters
+     * @param {string} html - The HTML string to escape
+     * @returns {string} - Escaped HTML string
+     */
+    function escapeHtml(html) {
+        const escapeMap = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        
+        return html.replace(/[&<>"']/g, function(m) {
+            return escapeMap[m];
+        });
+    }
+    
+    /**
+     * Initialize tab system event handlers
+     */
+    function initTabSystem() {
+        // Tab switching
+        $('.tab-button').off('click').on('click', function() {
+            const tabId = $(this).data('tab');
+            const $tabGroup = $(this).closest('.tabs');
+            
+            // Update active tab button
+            $tabGroup.find('.tab-button').removeClass('active');
+            $(this).addClass('active');
+            
+            // Update active tab content
+            $tabGroup.find('.tab-content').removeClass('active');
+            $(`#${tabId}`).addClass('active');
+        });
+        
+        // Code execution
+        $('.run-button').off('click').on('click', function() {
+            const targetId = $(this).data('target');
+            const $codeBlock = $(`#${targetId}`);
+            const language = $codeBlock.data('language');
+            const code = $codeBlock.find('code').text();
+            const $resultArea = $(`#${targetId}-result`);
+            
+            // Show loading indicator
+            $resultArea.html('<div class="loading">Executing code...</div>');
+            $resultArea.show();
+            
+            // Execute the code based on language
+            executeCode(code, language, $resultArea);
+        });
+    }
+    
+    /**
+     * Execute code and display results
+     * @param {string} code - The code to execute
+     * @param {string} language - The programming language
+     * @param {jQuery} $resultArea - The result display area
+     */
+    function executeCode(code, language, $resultArea) {
+        // In a real application, this would send the code to a backend service
+        // For this demo, we'll simulate execution with predefined outputs
+        
+        setTimeout(() => {
+            try {
+                let result = '';
+                
+                if (language === 'python') {
+                    // Simulate Python execution
+                    if (code.includes('reverse_string')) {
+                        result = "['o', 'l', 'l', 'e', 'h']";
+                    } else if (code.includes('find_duplicate')) {
+                        result = "2";
+                    } else if (code.includes('test_api_get')) {
+                        result = `API GET request simulation:
+{
+    "userId": 1,
+    "id": 1,
+    "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+    "body": "quia et suscipit\\nsuscipit recusandae consequuntur expedita et cum\\nreprehenderit molestiae ut ut quas totam\\nnostrum rerum est autem sunt rem eveniet architecto"
+}
+API test passed!`;
+                    } else {
+                        result = "Code executed successfully!";
+                    }
+                } else if (language === 'javascript') {
+                    // Simulate JavaScript execution
+                    if (code.includes('reverseString')) {
+                        result = "['o', 'l', 'l', 'e', 'h']";
+                    } else if (code.includes('findDuplicate')) {
+                        result = "2";
+                    } else if (code.includes('testApiGet')) {
+                        result = `API test passed!
+Response: {
+    "userId": 1,
+    "id": 1,
+    "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+    "body": "quia et suscipit\\nsuscipit recusandae consequuntur expedita et cum\\nreprehenderit molestiae ut ut quas totam\\nnostrum rerum est autem sunt rem eveniet architecto"
+}`;
+                    } else {
+                        result = "Code executed successfully!";
+                    }
+                } else {
+                    result = "Unsupported language for execution";
+                }
+                
+                // Display the result
+                $resultArea.html(`<pre>${result}</pre>`);
+                
+            } catch (error) {
+                // Display error
+                $resultArea.html(`<pre class="error">Error: ${error.message}</pre>`);
+            }
+        }, 1000); // Simulate execution delay
     }
 });

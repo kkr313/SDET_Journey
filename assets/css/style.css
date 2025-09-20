@@ -1,6 +1,6 @@
 /* 
  * SDET Learning Hub - Main Stylesheet
- * A premium, responsive design for SDET learning materials
+ * A premium, responsive design for SDET learning materials with tab view support
  */
 
 /* ===== VARIABLES ===== */
@@ -261,6 +261,22 @@ main .container {
     position: sticky;
     top: 90px;
     transition: var(--transition);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) transparent;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    border-radius: 10px;
 }
 
 .nav-link {
@@ -549,6 +565,184 @@ main .container {
     position: relative;
 }
 
+/* Tab system styling */
+.tabs {
+    margin: 1.5rem 0;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.tab-nav {
+    display: flex;
+    overflow-x: auto;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tab-button {
+    padding: 0.75rem 1.25rem;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    font-weight: 500;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.tab-button:hover {
+    background-color: rgba(var(--primary-color-rgb), 0.2);
+}
+
+.tab-button.active {
+    background-color: rgba(var(--primary-color-rgb), 0.3);
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.tab-content {
+    display: none;
+    padding: 1rem;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Result tab styling */
+.tab-content pre {
+    margin: 0;
+    padding: 1rem;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.tab-content code {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* Code editor styling for Result tab */
+.code-editor {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    background-color: var(--code-bg);
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.code-editor select {
+    width: 120px;
+    padding: 6px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-size: 0.9em;
+}
+
+.code-editor textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--code-bg);
+    color: var(--text-color);
+    font-family: 'Courier New', monospace;
+    resize: vertical;
+}
+
+.execution-result {
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--bg-color);
+    margin-top: 10px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: 'Courier New', monospace;
+    min-height: 60px;
+}
+
+.execution-success {
+    color: #4caf50;
+}
+
+.execution-error {
+    color: #f44336;
+}
+
+/* Copy button styling */
+.copy-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 0.8em;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.copy-button:hover {
+    opacity: 1;
+}
+
+/* Run button styling */
+.run-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.run-button:hover {
+    background-color: var(--primary-color-dark);
+}
+
+/* Code execution result styling */
+.code-execution-result {
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-top: 1px solid var(--border-color);
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9rem;
+    min-height: 3rem;
+    max-height: 200px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.execution-result {
+    color: var(--success-color);
+    margin: 0;
+    padding: 0;
+}
+
+.execution-error {
+    color: var(--danger-color);
+    margin: 0;
+    padding: 0;
+}
+
 .content-section pre::before {
     content: attr(data-language);
     position: absolute;
@@ -636,21 +830,50 @@ main .container {
 .content-section table {
     width: 100%;
     border-collapse: collapse;
-    margin: 20px 0;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    box-shadow: var(--shadow-sm);
+    display: table;
 }
 
-.content-section th, .content-section td {
-    padding: 10px;
+.content-section th, 
+.content-section td {
+    padding: 0.75rem;
+    text-align: left;
     border: 1px solid var(--border-color);
 }
 
 .content-section th {
-    background-color: rgba(99, 102, 241, 0.1);
+    background-color: rgba(var(--primary-color-rgb), 0.1);
+    font-weight: 600;
     color: var(--primary-color);
 }
 
 .content-section tr:nth-child(even) {
     background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Comparison tables styling */
+.comparison-table {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+}
+
+.comparison-table th {
+    background-color: rgba(var(--primary-color-rgb), 0.2);
+    font-weight: 700;
+    text-align: center;
+}
+
+.comparison-table td, .comparison-table th {
+    padding: 10px;
+    border: 1px solid var(--border-color);
+}
+
+.comparison-table tr:first-child th {
+    background-color: rgba(var(--secondary-color-rgb), 0.2);
 }
 
 /* Enhanced styling for content area */
@@ -781,6 +1004,24 @@ footer {
 footer p {
     color: var(--secondary-color);
     font-size: 0.9rem;
+}
+
+/* Install button styles */
+.install-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin-right: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.install-button:hover {
+    background-color: var(--secondary-color);
 }
 
 /* ===== RESPONSIVE STYLES ===== */

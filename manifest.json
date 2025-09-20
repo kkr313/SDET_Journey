@@ -2,10 +2,12 @@
   "name": "SDET Journey",
   "short_name": "SDET Journey",
   "description": "A comprehensive resource for aspiring and current Software Development Engineers in Test",
-  "start_url": "/",
+  "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3b82f6",
+  "orientation": "any",
+  "categories": ["education", "development", "testing"],
   "icons": [
     {
       "src": "assets/images/icon-192x192.png",

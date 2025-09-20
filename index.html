@@ -10,6 +10,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#3b82f6">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="assets/images/icon-192x192.png">
 </head>
@@ -68,7 +69,8 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2023 SDET Learning Hub. All rights reserved.</p>
+            <p>&copy; <span id="current-year"></span> SDET Learning Hub. All rights reserved.</p>
+            <p>Built with <i class="fas fa-heart" style="color: #e25555;"></i> by Karan</p>
         </div>
     </footer>
 
@@ -76,5 +78,21 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="assets/js/main.js"></script>
+    <script>
+        // Make executeCode function globally available
+        window.executeCode = function(inputIdOrElement, resultIdOrLanguage) {
+            if (typeof window.mainExecuteCode === 'function') {
+                return window.mainExecuteCode(inputIdOrElement, resultIdOrLanguage);
+            } else {
+                console.error('Main executeCode function not found');
+                const resultArea = document.getElementById(resultIdOrLanguage);
+                if (resultArea) {
+                    resultArea.innerHTML = 'Error: Code execution not available';
+                    resultArea.style.display = 'block';
+                    resultArea.classList.add('execution-error');
+                }
+            }
+        }
+    </script>
 </body>
 </html>
