@@ -249,6 +249,9 @@ $(document).ready(function() {
         // Load saved font size
         const savedFontSize = parseInt(localStorage.getItem('fontSize') || "0", 10);
         if (savedFontSize !== 0) changeFontSize(savedFontSize);
+
+        // Navbar PDF button event
+        $('#download-pdf-navbar').on('click', downloadCurrentTopicAsPDF);
     }
     
     /**
@@ -413,6 +416,52 @@ $(document).ready(function() {
         links.forEach((link, idx) => {
             link.classList.toggle('active', idx === currentTopicIndex);
         });
+    }
+
+    // Remove download button from topic nav if present
+    const topicNav = document.getElementById('topic-nav');
+    const downloadBtn = document.getElementById('download-pdf');
+    if (topicNav && downloadBtn) {
+        topicNav.removeChild(downloadBtn);
+    }
+
+    function downloadCurrentTopicAsPDF() {
+        const topic = topicFiles[currentTopicIndex];
+        const content = document.getElementById('markdown-content');
+        if (!content) return;
+        // Clone content for PDF
+        const pdfContent = content.cloneNode(true);
+        // Add watermark as absolutely positioned overlay (repeated for each page)
+        const watermarkStyle = `
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 2em;
+            color: #818cf8;
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 9999;
+            width: 100%;
+            text-align: center;
+        `;
+        // Add multiple watermarks for better coverage
+        for (let i = 0; i < 3; i++) {
+            const watermark = document.createElement('div');
+            watermark.textContent = 'qa-journey.netlify.app';
+            watermark.setAttribute('style', watermarkStyle + `top: ${30 + i*30}%;`);
+            pdfContent.appendChild(watermark);
+        }
+        // Use html2pdf with pagebreak
+        const opt = {
+            margin: 0.5,
+            filename: `${topic.title.replace(/\s+/g, '_')}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+        html2pdf().set(opt).from(pdfContent).save();
     }
 
     // Initial topic nav setup
