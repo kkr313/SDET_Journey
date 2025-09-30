@@ -391,6 +391,10 @@ $(document).ready(function() {
         loadMarkdownContent(topicFiles[index].id);
         updateTopicNav();
         updateSidebarActive();
+        // Scroll to top of content and window for navigation
+        const content = document.getElementById('markdown-content');
+        if (content) content.scrollTop = 0;
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }
 
     document.getElementById('prev-topic').onclick = function() {
