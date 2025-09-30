@@ -18,6 +18,8 @@ An SDET is a software engineer who specializes in testing. Unlike traditional QA
 - Participate in software design discussions
 - Understand both development and testing perspectives
 
+--- 
+
 ## Core competencies
 
 ### 1. Technical
@@ -92,9 +94,11 @@ APIs, gateways, message queues (Kafka/RabbitMQ), contracts (Pact), service virtu
       - mentoring, 
       - influencing quality strategy 
 
-## Choose your primary stack (map your tools)
+--- 
 
-### Java stack (popular in enterprises)
+## Choose your primary stack
+
+### Java stack
 
 - Build: Maven or Gradle
 - Unit/Component: JUnit 5 or TestNG
@@ -106,7 +110,7 @@ APIs, gateways, message queues (Kafka/RabbitMQ), contracts (Pact), service virtu
 - Reporting: Allure, Extent
 - Static analysis: Checkstyle, SpotBugs, SonarQube
 
-### Python stack (fast to start, versatile)
+### Python stack
 
 - Env: venv/poetry, pip
 - Unit/Component: pytest
@@ -118,7 +122,7 @@ APIs, gateways, message queues (Kafka/RabbitMQ), contracts (Pact), service virtu
 - Reporting: allure-pytest, pytest-html
 - Static analysis: flake8, black, mypy, SonarQube
 
-### JavaScript/TypeScript stack (frontend-heavy teams)
+### JavaScript/TypeScript stack
 
 - Package: npm/yarn/pnpm
 - Unit/Component: Jest or Mocha
@@ -128,6 +132,8 @@ APIs, gateways, message queues (Kafka/RabbitMQ), contracts (Pact), service virtu
 - Performance: k6, Artillery
 - Reporting: Allure Playwright, Mochawesome
 - Static analysis: ESLint, Prettier, SonarQube 
+
+--- 
 
 ## Essential Skills for SDETs
  
