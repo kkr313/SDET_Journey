@@ -2,7 +2,7 @@
   "name": "SDET Journey QA Platform",
   "short_name": "SDET Journey",
   "description": "A QA learning platform for SDET topics, offline-ready.",
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#818cf8",
