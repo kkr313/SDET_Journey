@@ -1096,3 +1096,100 @@ footer p {
         font-size: 3.5rem;
     }
 }
+
+@media (max-width: 600px) {
+    .topic-nav-btn {
+        font-size: 0.6em;
+        padding: 0.5em 0.6em;
+        max-width: 90vw;
+    }
+    .topic-nav-btn .nav-title {
+        font-size: 0.6em;
+        padding: 0 0.08em;
+    }
+    .topic-nav-btn .nav-icon {
+        font-size: 1em;
+        margin: 0 0.08em;
+    }
+}
+
+.topic-nav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    max-width: 48vw;
+    padding: 0.7em 1.2em;
+    font-size: 1.1em;
+    border-radius: 2em;
+    background: linear-gradient(90deg, #4f8cff 0%, #6ed6ff 100%);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: box-shadow 0.2s, background 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 0 0.5em;
+}
+
+.topic-nav-btn .nav-title {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+    padding: 0 0.3em;
+}
+
+.topic-nav-btn .nav-icon {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    font-size: 1.2em;
+    margin: 0 0.2em;
+}
+
+@media (max-width: 600px) {
+    .topic-nav-btn {
+        font-size: 1em;
+        padding: 0.6em 0.7em;
+        max-width: 80vw;
+    }
+    .topic-nav-btn .nav-title {
+        font-size: 0.6em;
+        padding: 0 0.15em;
+    }
+    .topic-nav-btn .nav-icon {
+        font-size: 1.1em;
+        margin: 0 0.1em;
+    }
+}
+
+@media (max-width: 600px) {
+  .topic-nav-btn {
+    font-size: 0.75em;
+    padding: 0.4em 0.4em;
+    max-width: 70vw;
+    min-width: 60px;
+  }
+  .topic-nav-btn .nav-title {
+    font-size: 0.75em;
+    padding: 0 0.05em;
+    max-width: 50vw;
+    min-width: 0;
+  }
+  .topic-nav-btn .nav-icon {
+    font-size: 1em;
+    margin: 0 0.05em;
+  }
+}
+
+.topic-nav-btn:focus, .topic-nav-btn:hover {
+    background: linear-gradient(90deg, #6ed6ff 0%, #4f8cff 100%);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.topic-nav-btn:active {
+    background: linear-gradient(90deg, #3a6fd8 0%, #4f8cff 100%);
+}
