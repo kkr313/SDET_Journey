@@ -350,22 +350,47 @@ $(document).ready(function() {
         });
     }
 
-    // Topic navigation logic
+    // --- Improved Topic Navigation ---
     const topicFiles = [
-        'assets/data/getting-started.md',
-        'assets/data/manual-concepts.md',
-        'assets/data/agile-methodology.md',
-        'assets/data/api-testing.md',
-        'assets/data/test-automation-frameworks.md',
-        'assets/data/ci-cd-pipelines.md',
-        'assets/data/code-interview.md'
+        { id: 'getting-started', title: 'Getting Started with SDET' },
+        { id: 'manual-concepts', title: 'Manual Concepts' },
+        { id: 'agile-methodology', title: 'Agile Methodology' },
+        { id: 'api-testing', title: 'API Testing Fundamentals' },
+        { id: 'test-automation-frameworks', title: 'Test Automation Frameworks' },
+        { id: 'ci-cd-pipelines', title: 'CI/CD Pipelines for Testing' },
+        { id: 'code-interview', title: 'Coding Interview Prep' }
     ];
     let currentTopicIndex = 0;
+
+    function truncateTitle(title, maxLen = 22) {
+        return title.length > maxLen ? title.slice(0, maxLen - 3) + '...' : title;
+    }
+
+    function updateTopicNav() {
+        const prevBtn = document.getElementById('prev-topic');
+        const nextBtn = document.getElementById('next-topic');
+        // Previous topic
+        if (currentTopicIndex > 0) {
+            prevBtn.style.display = '';
+            prevBtn.innerHTML = `<span class="nav-icon"><i class="fas fa-arrow-left"></i></span> <span class="nav-title">${truncateTitle(topicFiles[currentTopicIndex-1].title)}</span>`;
+        } else {
+            prevBtn.style.display = 'none';
+        }
+        // Next topic
+        if (currentTopicIndex < topicFiles.length - 1) {
+            nextBtn.style.display = '';
+            nextBtn.innerHTML = `<span class="nav-title">${truncateTitle(topicFiles[currentTopicIndex+1].title)}</span> <span class="nav-icon"><i class="fas fa-arrow-right"></i></span>`;
+        } else {
+            nextBtn.style.display = 'none';
+        }
+    }
 
     function showTopic(index) {
         if (index < 0 || index >= topicFiles.length) return;
         currentTopicIndex = index;
-        loadMarkdown(topicFiles[index]);
+        loadMarkdownContent(topicFiles[index].id);
+        updateTopicNav();
+        updateSidebarActive();
     }
 
     document.getElementById('prev-topic').onclick = function() {
@@ -379,12 +404,13 @@ $(document).ready(function() {
         }
     };
 
-    // Optionally, update sidebar selection when navigating
     function updateSidebarActive() {
-        const links = document.querySelectorAll('#topics-list a');
+        const links = document.querySelectorAll('#topics-list li');
         links.forEach((link, idx) => {
             link.classList.toggle('active', idx === currentTopicIndex);
         });
     }
-    // Call updateSidebarActive() inside showTopic if needed
+
+    // Initial topic nav setup
+    updateTopicNav();
 });
