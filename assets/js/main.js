@@ -349,4 +349,42 @@ $(document).ready(function() {
             }
         });
     }
+
+    // Topic navigation logic
+    const topicFiles = [
+        'assets/data/getting-started.md',
+        'assets/data/manual-concepts.md',
+        'assets/data/agile-methodology.md',
+        'assets/data/api-testing.md',
+        'assets/data/test-automation-frameworks.md',
+        'assets/data/ci-cd-pipelines.md',
+        'assets/data/code-interview.md'
+    ];
+    let currentTopicIndex = 0;
+
+    function showTopic(index) {
+        if (index < 0 || index >= topicFiles.length) return;
+        currentTopicIndex = index;
+        loadMarkdown(topicFiles[index]);
+    }
+
+    document.getElementById('prev-topic').onclick = function() {
+        if (currentTopicIndex > 0) {
+            showTopic(currentTopicIndex - 1);
+        }
+    };
+    document.getElementById('next-topic').onclick = function() {
+        if (currentTopicIndex < topicFiles.length - 1) {
+            showTopic(currentTopicIndex + 1);
+        }
+    };
+
+    // Optionally, update sidebar selection when navigating
+    function updateSidebarActive() {
+        const links = document.querySelectorAll('#topics-list a');
+        links.forEach((link, idx) => {
+            link.classList.toggle('active', idx === currentTopicIndex);
+        });
+    }
+    // Call updateSidebarActive() inside showTopic if needed
 });

@@ -898,6 +898,57 @@ footer p {
     font-size: 0.9rem;
 }
 
+/* Topic navigation buttons styling */
+#topic-nav {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+
+.nav-btn {
+  background: linear-gradient(135deg, #4299e1, #667eea);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 28px;
+  font-size: 1.1em;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(66, 153, 225, 0.12);
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+  outline: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-btn:active {
+  transform: scale(0.97);
+}
+
+.nav-btn:focus {
+  box-shadow: 0 0 0 3px #4299e1aa;
+}
+
+.nav-btn:hover {
+  background: linear-gradient(135deg, #3182ce, #4299e1);
+  box-shadow: 0 4px 16px rgba(66, 153, 225, 0.18);
+}
+
+/* Responsive for mobile */
+@media (max-width: 600px) {
+  #topic-nav {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .nav-btn {
+    width: 100%;
+    padding: 12px 0;
+    font-size: 1em;
+  }
+}
+
 /* ===== RESPONSIVE STYLES ===== */
 @media (max-width: 992px) {
     main .container {
