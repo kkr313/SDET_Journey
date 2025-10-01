@@ -431,37 +431,43 @@ $(document).ready(function() {
         if (!content) return;
         // Clone content for PDF
         const pdfContent = content.cloneNode(true);
-        // Add watermark as absolutely positioned overlay (repeated for each page)
-        const watermarkStyle = `
-            position: absolute;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-30deg);
-            font-size: 2em;
-            color: #818cf8;
-            opacity: 0.15;
-            pointer-events: none;
-            z-index: 9999;
-            width: 100%;
-            text-align: center;
-        `;
-        // Add multiple watermarks for better coverage
-        for (let i = 0; i < 3; i++) {
-            const watermark = document.createElement('div');
-            watermark.textContent = 'qa-journey.netlify.app';
-            watermark.setAttribute('style', watermarkStyle + `top: ${30 + i*30}%;`);
-            pdfContent.appendChild(watermark);
-        }
-        // Use html2pdf with pagebreak
+        // Force white background and dark text for PDF
+        pdfContent.style.background = '#fff';
+        pdfContent.style.color = '#222';
+        pdfContent.style.padding = '24px';
+        pdfContent.style.fontFamily = 'Poppins, Arial, sans-serif';
+        // Recursively set all text to dark
+        (function setDarkText(node) {
+            if (node.nodeType === 1) {
+                node.style.color = '#222';
+                Array.from(node.children).forEach(setDarkText);
+            }
+        })(pdfContent);
+        // Use html2pdf and add watermark + page number to every page
         const opt = {
             margin: 0.5,
             filename: `${topic.title.replace(/\s+/g, '_')}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2 },
             jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
-            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
         };
-        html2pdf().set(opt).from(pdfContent).save();
+        html2pdf().set(opt).from(pdfContent).toPdf().get('pdf').then(function(pdf) {
+            const totalPages = pdf.internal.getNumberOfPages();
+            for (let i = 1; i <= totalPages; i++) {
+                pdf.setPage(i);
+                // Watermark
+                pdf.setFontSize(18);
+                pdf.setTextColor(129, 140, 248);
+                pdf.text('qa-journey.netlify.app', pdf.internal.pageSize.getWidth()/2, pdf.internal.pageSize.getHeight()/2, {
+                    angle: -30, align: 'center', opacity: 0.15
+                });
+                // Page number (top right)
+                pdf.setFontSize(12);
+                pdf.setTextColor(80, 80, 80);
+                pdf.text(`Page ${i}`, pdf.internal.pageSize.getWidth() - 0.7, 0.7, {align: 'right'});
+            }
+        }).save();
     }
 
     // Initial topic nav setup
