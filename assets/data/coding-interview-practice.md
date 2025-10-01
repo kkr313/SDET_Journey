@@ -1,6 +1,16 @@
-# Coding Practice Questions
+# Coding Interview & Practice
 
-Welcome to the interactive coding practice section! Here you'll find carefully curated programming questions with detailed explanations, optimal solutions, and the ability to run code in multiple languages.
+Welcome to the comprehensive coding interview preparation section! Here you'll find carefully curated programming questions with detailed explanations, optimal solutions, and interactive coding playground to practice.
+
+## 🎯 How to Use This Section
+
+1. **Study the Problem**: Read the problem statement and examples carefully
+2. **Understand the Approach**: Review the detailed explanation and complexity analysis
+3. **View Solutions**: Check optimized solutions in Python and JavaScript
+4. **Practice**: Use the interactive playground to write and test your own code
+5. **Run Tests**: Execute your code with sample test cases
+
+---
 
 ## Array and String Problems
 
@@ -132,3 +142,82 @@ We can solve this iteratively by maintaining three pointers: previous, current, 
 <div class="code-practice-container">
 <div class="question-id" data-question="reverse-linked-list"></div>
 </div>
+
+---
+
+## Advanced Problems
+
+### 6. Longest Substring Without Repeating Characters
+**Difficulty:** Medium  
+**Topics:** Strings, Sliding Window, Hash Table
+
+**Problem Statement:**
+Given a string `s`, find the length of the longest substring without repeating characters.
+
+**Example:**
+```
+Input: s = "abcabcbb"
+Output: 3
+Explanation: The answer is "abc", with the length of 3.
+```
+
+**Detailed Explanation:**
+Use the sliding window technique with two pointers. Expand the right pointer to include new characters. When a duplicate is found, move the left pointer to exclude the duplicate. Keep track of the maximum window size.
+
+**Time Complexity:** O(n) - single pass through the string  
+**Space Complexity:** O(min(m,n)) - where m is charset size
+
+<div class="code-practice-container">
+<div class="question-id" data-question="longest-substring"></div>
+</div>
+
+---
+
+### 7. Container With Most Water
+**Difficulty:** Medium  
+**Topics:** Arrays, Two Pointers
+
+**Problem Statement:**
+Given `n` non-negative integers representing the height of lines, find two lines that together with the x-axis form a container that contains the most water.
+
+**Example:**
+```
+Input: height = [1,8,6,2,5,4,8,3,7]
+Output: 49
+Explanation: The maximum area is between heights 8 and 7.
+```
+
+**Detailed Explanation:**
+Use two pointers starting from both ends. Calculate the area and move the pointer with the smaller height inward, as moving the taller one won't increase the area.
+
+**Time Complexity:** O(n) - single pass  
+**Space Complexity:** O(1) - only using two pointers
+
+<div class="code-practice-container">
+<div class="question-id" data-question="container-water"></div>
+</div>
+
+---
+
+## Tips for Coding Interviews
+
+### 🧠 Problem-Solving Strategy
+1. **Understand the Problem**: Ask clarifying questions
+2. **Think Out Loud**: Explain your thought process
+3. **Start Simple**: Begin with a brute force solution
+4. **Optimize**: Look for patterns and optimize time/space complexity
+5. **Test**: Walk through examples and edge cases
+
+### ⚡ Common Patterns
+- **Two Pointers**: For arrays and strings
+- **Sliding Window**: For substring problems
+- **Hash Maps**: For frequency and lookup problems
+- **Binary Search**: For sorted arrays
+- **Dynamic Programming**: For optimization problems
+
+### 🎯 Interview Best Practices
+- Write clean, readable code
+- Handle edge cases
+- Explain time and space complexity
+- Test with examples
+- Be prepared to optimize further

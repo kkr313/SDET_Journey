@@ -1016,7 +1016,7 @@ footer p {
     
     .sidebar {
         position: fixed;
-        top: 60px;
+        top: 70px;
         left: -100%;
         width: 85%;
         max-width: 300px;
