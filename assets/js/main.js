@@ -189,6 +189,11 @@ $(document).ready(function() {
         // Topic selection
         $('#topics-list').on('click', 'li.topic-item', function() {
             const topicId = $(this).data('id');
+            const idx = topicFiles.findIndex(t => t.id === topicId);
+            if (idx !== -1) {
+                currentTopicIndex = idx;
+                updateTopicNav();
+            }
             $('#topics-list li').removeClass('active');
             $(this).addClass('active');
             loadMarkdownContent(topicId);
@@ -375,14 +380,14 @@ $(document).ready(function() {
         // Previous topic
         if (currentTopicIndex > 0) {
             prevBtn.style.display = '';
-            prevBtn.innerHTML = `<span class="nav-icon"><i class="fas fa-arrow-left"></i></span><span class="nav-title" title="${topicFiles[currentTopicIndex-1].title}">${truncateTitle(topicFiles[currentTopicIndex-1].title)}</span>`;
+            prevBtn.innerHTML = `<span class="nav-title" title="${topicFiles[currentTopicIndex-1].title}">${truncateTitle(topicFiles[currentTopicIndex-1].title)}</span>`;
         } else {
             prevBtn.style.display = 'none';
         }
         // Next topic
         if (currentTopicIndex < topicFiles.length - 1) {
             nextBtn.style.display = '';
-            nextBtn.innerHTML = `<span class="nav-title" title="${topicFiles[currentTopicIndex+1].title}">${truncateTitle(topicFiles[currentTopicIndex+1].title)}</span><span class="nav-icon"><i class="fas fa-arrow-right"></i></span>`;
+            nextBtn.innerHTML = `<span class="nav-title" title="${topicFiles[currentTopicIndex+1].title}">${truncateTitle(topicFiles[currentTopicIndex+1].title)}</span>`;
         } else {
             nextBtn.style.display = 'none';
         }
