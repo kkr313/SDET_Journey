@@ -257,6 +257,47 @@ $(document).ready(function() {
 
         // Navbar PDF button event
         $('#download-pdf-navbar').on('click', downloadCurrentTopicAsPDF);
+        
+        // PDF Download Confirmation Modal Logic
+        const $modal = $('#pdf-confirm-modal');
+        const $yes = $('#pdf-confirm-yes');
+        const $no = $('#pdf-confirm-no');
+        const $downloadBtn = $('#download-pdf');
+        const $downloadNavbarBtn = $('#download-pdf-navbar');
+        const $topicTitle = $('#pdf-topic-title');
+
+        function getCurrentTopicTitle() {
+            if (typeof currentTopicIndex !== 'undefined' && window.topicFiles && topicFiles[currentTopicIndex]) {
+                return topicFiles[currentTopicIndex].title;
+            }
+            // fallback: try to get active topic from sidebar
+            const active = $('#topics-list li.active .topic-title').text();
+            return active || 'this topic';
+        }
+
+        function showPdfModal(e) {
+            if (e) e.preventDefault();
+            $topicTitle.text(getCurrentTopicTitle());
+            $modal.show();
+        }
+
+        if ($downloadBtn.length) {
+            $downloadBtn.off('click').on('click', showPdfModal);
+        }
+        if ($downloadNavbarBtn.length) {
+            $downloadNavbarBtn.off('click').on('click', showPdfModal);
+        }
+        $yes.on('click', function() {
+            $modal.hide();
+            downloadCurrentTopicAsPDF();
+        });
+        $no.on('click', function() {
+            $modal.hide();
+        });
+        // Hide modal on outside click
+        $modal.on('click', function(e) {
+            if (e.target === this) $modal.hide();
+        });
     }
     
     /**
@@ -433,22 +474,27 @@ $(document).ready(function() {
     function downloadCurrentTopicAsPDF() {
         const topic = topicFiles[currentTopicIndex];
         const content = document.getElementById('markdown-content');
-        if (!content) return;
+        if (!content) {
+            alert('No topic content found to download.');
+            return;
+        }
+        // Only download if topic exists
+        if (!topic) {
+            alert('No topic selected.');
+            return;
+        }
         // Clone content for PDF
         const pdfContent = content.cloneNode(true);
-        // Force white background and dark text for PDF
         pdfContent.style.background = '#fff';
         pdfContent.style.color = '#222';
         pdfContent.style.padding = '24px';
         pdfContent.style.fontFamily = 'Poppins, Arial, sans-serif';
-        // Recursively set all text to dark
         (function setDarkText(node) {
             if (node.nodeType === 1) {
                 node.style.color = '#222';
                 Array.from(node.children).forEach(setDarkText);
             }
         })(pdfContent);
-        // Use html2pdf and add watermark + page number to every page
         const opt = {
             margin: 0.5,
             filename: `${topic.title.replace(/\s+/g, '_')}.pdf`,
@@ -466,7 +512,6 @@ $(document).ready(function() {
                 pdf.text('qa-journey.netlify.app', pdf.internal.pageSize.getWidth() - 0.7, pdf.internal.pageSize.getHeight() - 0.5, {
                     align: 'right'
                 });
-                // Page number (top right)
                 pdf.setFontSize(12);
                 pdf.setTextColor(80, 80, 80);
                 pdf.text(`Page ${i}`, pdf.internal.pageSize.getWidth() - 0.7, 0.7, {align: 'right'});
