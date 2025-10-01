@@ -457,10 +457,10 @@ $(document).ready(function() {
             for (let i = 1; i <= totalPages; i++) {
                 pdf.setPage(i);
                 // Watermark
-                pdf.setFontSize(22);
+                pdf.setFontSize(30);
                 pdf.setTextColor(129, 140, 248);
                 pdf.text('qa-journey.netlify.app', pdf.internal.pageSize.getWidth()/2, pdf.internal.pageSize.getHeight()/2, {
-                    angle: -90, align: 'center', opacity: 0.15
+                    angle: 30, align: 'center', opacity: 0.8
                 });
                 // Page number (top right)
                 pdf.setFontSize(12);
