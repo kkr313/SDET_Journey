@@ -628,21 +628,14 @@ $(document).ready(function() {
     }
       /**
      * Setup mobile overlay for coding practice
-     */
-    function setupMobileOverlay() {
-        // Only add mobile overlay for truly mobile devices
-        if (!$('.mobile-overlay').length && window.innerWidth <= 768) {
-            $('body').append('<div class="mobile-overlay"></div>');
-        }
+     */    function setupMobileOverlay() {
+        // Don't add special mobile overlay - use standard behavior
         $('body').addClass('code-practice-active');
-    }
-      /**
+    }    /**
      * Setup sidebar enhancements for mobile
      */
     function setupSidebarEnhancements() {
-        if (window.innerWidth <= 768 && !$('#sidebar .sidebar-close').length) {
-            $('#sidebar').prepend('<button class="sidebar-close" style="position: absolute; top: 10px; right: 10px; background: var(--primary-color); color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; z-index: 10;"><i class="fas fa-times"></i></button>');
-        }
+        // Don't add special sidebar features - use standard mobile behavior
     }
     
     /**
@@ -728,20 +721,11 @@ $(document).ready(function() {
             </div>
         `;
     }
-    
-    /**
+      /**
      * Setup coding practice event listeners
      */
     function setupCodingEventListeners() {
-        // Sidebar close button
-        $(document).on('click', '.sidebar-close', function() {
-            $('#sidebar').removeClass('active');
-        });
-        
-        // Mobile overlay click
-        $(document).on('click', '.mobile-overlay', function() {
-            $('#sidebar').removeClass('active');
-        });
+        // Removed special mobile sidebar handlers - use standard behavior
         
         // Practice tabs
         $(document).on('click', '.practice-tab', function() {
@@ -832,13 +816,11 @@ $(document).ready(function() {
             $output.hide();
         }
     }
-    
-    /**
+      /**
      * Clean up coding practice specific elements
      */
     function cleanupCodingPractice() {
         $('body').removeClass('code-practice-active');
-        $('.mobile-overlay').remove();
-        $('.sidebar-close').remove();
+        // No special elements to remove - using standard behavior
     }
 });

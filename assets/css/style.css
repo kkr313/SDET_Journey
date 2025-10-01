@@ -1593,56 +1593,15 @@ footer p {
 }
 
 /* Enhanced Mobile Responsiveness for Coding Practice */
-@media (max-width: 992px) {
-  /* Ensure coding practice follows standard responsive behavior */
-  body.code-practice-active main .container {
-    flex-direction: column;
-  }
-  
-  body.code-practice-active .sidebar {
-    width: 100%;
-    height: auto;
-    max-height: 60vh;
-    position: relative;
-    top: 0;
-    margin-bottom: 20px;
-  }
-  
-  body.code-practice-active .content {
-    width: 100%;
-    padding: 20px;
-  }
-}
+/* Removed override - let coding practice use standard responsive behavior */
 
 @media (max-width: 768px) {
-  /* Mobile-specific adjustments for coding practice */
+  /* Mobile-specific adjustments for coding practice - only content styling */
   body.code-practice-active .content {
     padding: 15px;
   }
   
-  body.code-practice-active .sidebar {
-    padding: 15px;
-    margin-bottom: 15px;
-  }
-  
-  body.code-practice-active .sidebar h2 {
-    font-size: 1.1rem;
-    margin-bottom: 12px;
-  }
-  
-  body.code-practice-active #topics-list li {
-    padding: 10px 12px;
-    font-size: 0.85rem;
-  }
-  
-  body.code-practice-active .search-container {
-    margin-bottom: 1rem;
-  }
-  
-  body.code-practice-active #search-input {
-    padding: 0.6rem 0.6rem 0.6rem 2.2rem;
-    font-size: 0.9rem;
-  }
+  /* Removed sidebar overrides - let it use standard mobile behavior */
   
   /* Improve coding practice containers on mobile */
   
@@ -1679,35 +1638,12 @@ footer p {
 }
 
 @media (max-width: 480px) {
-  /* Very small mobile devices */
+  /* Very small mobile devices - only content styling */
   body.code-practice-active .content {
     padding: 12px;
   }
   
-  body.code-practice-active .sidebar {
-    padding: 12px;
-    margin-bottom: 12px;
-  }
-  
-  body.code-practice-active .sidebar h2 {
-    font-size: 1rem;
-    margin-bottom: 10px;
-  }
-  
-  body.code-practice-active #topics-list li {
-    padding: 8px 10px;
-    font-size: 0.8rem;
-  }
-  
-  body.code-practice-active #search-input {
-    padding: 0.5rem 0.5rem 0.5rem 2rem;
-    font-size: 0.85rem;
-  }
-  
-  body.code-practice-active .search-container i {
-    font-size: 1rem;
-    left: 0.6rem;
-  }
+  /* Removed sidebar overrides - let it use standard mobile behavior */
   
   .code-practice-container {
     margin: 0.5rem 0;
