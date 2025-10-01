@@ -456,9 +456,8 @@ $(document).ready(function() {
             const totalPages = pdf.internal.getNumberOfPages();
             for (let i = 1; i <= totalPages; i++) {
                 pdf.setPage(i);
-                // Watermark in footer, right corner
-                pdf.setFontSize(12); // smaller, user-friendly font size
-                pdf.setTextColor(220, 220, 220); // very light gray
+                pdf.setFontSize(12); 
+                pdf.setTextColor(220, 220, 220); 
                 pdf.text('qa-journey.netlify.app', pdf.internal.pageSize.getWidth() - 0.7, pdf.internal.pageSize.getHeight() - 0.5, {
                     align: 'right'
                 });
