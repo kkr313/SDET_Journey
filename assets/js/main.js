@@ -458,8 +458,7 @@ $(document).ready(function() {
                 pdf.setPage(i);
                 // Watermark
                 pdf.setFontSize(30);
-                // Use a light gray color for watermark
-                pdf.setTextColor(180, 180, 180); // light gray
+                pdf.setTextColor(220, 220, 220); // very light gray
                 pdf.text('qa-journey.netlify.app', pdf.internal.pageSize.getWidth()/2, pdf.internal.pageSize.getHeight()/2, {
                     angle: 30, align: 'center'
                 });
