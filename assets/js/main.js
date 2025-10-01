@@ -805,7 +805,7 @@ const testCases = [
 testCases.forEach(([nums, target]) => {
     const result = binarySearch(nums, target);
     console.log(\`Input: nums = [\${nums.join(', ')}], target = \${target}\`);
-    console.log(\`Output: \${result}\`);
+    console.log(\`Output: [\${result.join(', ')}]\`);
     console.log('');
 });`
         },
@@ -936,6 +936,29 @@ testCases.forEach(arr => {
     };
 
     function initializeCodingPractice() {
+        // Add mobile overlay for sidebar
+        if (!$('.mobile-overlay').length && window.innerWidth <= 992) {
+            $('body').append('<div class="mobile-overlay"></div>');
+        }
+        
+        // Add body class to identify coding practice page
+        $('body').addClass('code-practice-active');
+        
+        // Add close button to sidebar for mobile
+        if (window.innerWidth <= 992 && !$('#sidebar .sidebar-close').length) {
+            $('#sidebar').prepend('<button class="sidebar-close" style="position: absolute; top: 10px; right: 10px; background: var(--primary-color); color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; z-index: 10;"><i class="fas fa-times"></i></button>');
+        }
+        
+        // Sidebar close button handler
+        $(document).on('click', '.sidebar-close', function() {
+            $('#sidebar').removeClass('active');
+        });
+        
+        // Mobile overlay click handler
+        $(document).on('click', '.mobile-overlay', function() {
+            $('#sidebar').removeClass('active');
+        });
+        
         // Find all code practice containers
         $('.code-practice-container').each(function() {
             const $container = $(this);
@@ -1095,4 +1118,23 @@ testCases.forEach(arr => {
             }
         });
     }
+    
+    // Remove coding practice specific classes when navigating away
+    function cleanupCodingPractice() {
+        $('body').removeClass('code-practice-active');
+        $('.mobile-overlay').remove();
+        $('.sidebar-close').remove();
+    }
+    
+    // Enhanced loadMarkdownContent to handle cleanup
+    const originalLoadMarkdownContent = loadMarkdownContent;
+    loadMarkdownContent = function(topicId) {
+        // Cleanup previous coding practice state
+        if (!topicId || topicId !== 'code-practice') {
+            cleanupCodingPractice();
+        }
+        
+        // Call original function
+        return originalLoadMarkdownContent.call(this, topicId);
+    };
 });

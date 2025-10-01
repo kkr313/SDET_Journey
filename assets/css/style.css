@@ -1589,3 +1589,119 @@ footer p {
     padding: 0.5rem;
   }
 }
+
+/* Enhanced Mobile Responsiveness for Coding Practice */
+@media (max-width: 992px) {
+  /* When code practice is loaded, make sidebar collapsible */
+  body.code-practice-active .sidebar {
+    position: fixed;
+    top: 75px;
+    left: -100%;
+    width: 85%;
+    max-width: 320px;
+    height: calc(100vh - 75px);
+    z-index: 1100;
+    transition: left 0.3s ease;
+    overflow-y: auto;
+  }
+  
+  body.code-practice-active .sidebar.active {
+    left: 0;
+    box-shadow: var(--shadow-lg);
+  }
+  
+  body.code-practice-active .content {
+    width: 100%;
+    margin-left: 0;
+  }
+  
+  body.code-practice-active main .container {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Mobile-specific adjustments for coding practice */
+  .code-practice-container {
+    margin: 1rem -15px; /* Extend to screen edges */
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  
+  .practice-content {
+    padding: 0.75rem;
+  }
+  
+  .code-editor {
+    border-radius: 4px;
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+  
+  /* Improve tab readability on mobile */
+  .practice-tab {
+    font-size: 0.8rem;
+    padding: 14px 8px;
+  }
+  
+  /* Better spacing for mobile */
+  .solution-header {
+    margin-bottom: 0.75rem;
+  }
+  
+  .complexity-badge {
+    font-size: 0.75rem;
+    padding: 0.15rem 0.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Very small mobile devices */
+  .code-practice-container {
+    margin: 0.5rem -10px;
+  }
+  
+  .practice-content {
+    padding: 0.5rem;
+  }
+  
+  .practice-tab {
+    font-size: 0.75rem;
+    padding: 12px 6px;
+  }
+  
+  .code-editor {
+    min-height: 180px;
+    font-size: 0.75rem;
+    padding: 0.5rem;
+  }
+  
+  .run-code-btn, .reset-code-btn {
+    padding: 0.7rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* Dark overlay for mobile sidebar */
+.mobile-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1050;
+}
+
+@media (max-width: 992px) {
+  body.code-practice-active .mobile-overlay {
+    display: block;
+  }
+  
+  body.code-practice-active .sidebar.active + .mobile-overlay {
+    display: block;
+  }
+}
