@@ -456,11 +456,11 @@ $(document).ready(function() {
             const totalPages = pdf.internal.getNumberOfPages();
             for (let i = 1; i <= totalPages; i++) {
                 pdf.setPage(i);
-                // Watermark
-                pdf.setFontSize(30);
+                // Watermark in footer, right corner
+                pdf.setFontSize(12); // smaller, user-friendly font size
                 pdf.setTextColor(220, 220, 220); // very light gray
-                pdf.text('qa-journey.netlify.app', pdf.internal.pageSize.getWidth()/2, pdf.internal.pageSize.getHeight()/2, {
-                    angle: 30, align: 'center'
+                pdf.text('qa-journey.netlify.app', pdf.internal.pageSize.getWidth() - 0.7, pdf.internal.pageSize.getHeight() - 0.5, {
+                    align: 'right'
                 });
                 // Page number (top right)
                 pdf.setFontSize(12);
