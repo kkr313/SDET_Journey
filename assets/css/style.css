@@ -1282,6 +1282,7 @@ footer p {
   overflow: hidden;
   background: var(--content-bg);
   box-shadow: var(--shadow-md);
+  max-width: 100%;
 }
 
 .practice-tabs {
@@ -1332,6 +1333,8 @@ footer p {
 
 .practice-content {
   padding: 1.5rem;
+  background: inherit;
+  color: inherit;
 }
 
 .tab-panel {
@@ -1589,53 +1592,47 @@ footer p {
   }
 }
 
-/* Enhanced Mobile Responsiveness for Coding Practice - Side by Side Layout */
+/* Enhanced Mobile Responsiveness for Coding Practice */
 @media (max-width: 992px) {
-  /* Keep side-by-side layout for coding practice */
+  /* Ensure coding practice follows standard responsive behavior */
   body.code-practice-active main .container {
-    flex-direction: row;
-    gap: 10px;
+    flex-direction: column;
   }
   
   body.code-practice-active .sidebar {
-    width: 35%;
-    min-width: 250px;
-    max-width: 300px;
-    position: sticky;
-    top: 75px;
-    height: calc(100vh - 90px);
-    overflow-y: auto;
-    padding: 15px;
+    width: 100%;
+    height: auto;
+    max-height: 60vh;
+    position: relative;
+    top: 0;
+    margin-bottom: 20px;
   }
   
   body.code-practice-active .content {
-    flex: 1;
-    width: auto;
-    padding: 15px;
+    width: 100%;
+    padding: 20px;
   }
 }
 
 @media (max-width: 768px) {
-  /* Mobile-specific adjustments for coding practice - maintain side by side */
-  body.code-practice-active main .container {
-    gap: 8px;
+  /* Mobile-specific adjustments for coding practice */
+  body.code-practice-active .content {
+    padding: 15px;
   }
   
   body.code-practice-active .sidebar {
-    width: 30%;
-    min-width: 200px;
-    padding: 10px;
-    font-size: 0.85rem;
+    padding: 15px;
+    margin-bottom: 15px;
   }
   
   body.code-practice-active .sidebar h2 {
-    font-size: 1rem;
-    margin-bottom: 10px;
+    font-size: 1.1rem;
+    margin-bottom: 12px;
   }
   
   body.code-practice-active #topics-list li {
-    padding: 8px 10px;
-    font-size: 0.8rem;
+    padding: 10px 12px;
+    font-size: 0.85rem;
   }
   
   body.code-practice-active .search-container {
@@ -1643,9 +1640,11 @@ footer p {
   }
   
   body.code-practice-active #search-input {
-    padding: 0.5rem 0.5rem 0.5rem 2rem;
-    font-size: 0.85rem;
+    padding: 0.6rem 0.6rem 0.6rem 2.2rem;
+    font-size: 0.9rem;
   }
+  
+  /* Improve coding practice containers on mobile */
   
   .code-practice-container {
     margin: 1rem 0;
@@ -1680,35 +1679,34 @@ footer p {
 }
 
 @media (max-width: 480px) {
-  /* Very small mobile devices - still maintain side by side but more compact */
-  body.code-practice-active main .container {
-    gap: 5px;
+  /* Very small mobile devices */
+  body.code-practice-active .content {
+    padding: 12px;
   }
   
   body.code-practice-active .sidebar {
-    width: 35%;
-    min-width: 160px;
-    padding: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
   }
   
   body.code-practice-active .sidebar h2 {
-    font-size: 0.9rem;
-    margin-bottom: 8px;
+    font-size: 1rem;
+    margin-bottom: 10px;
   }
   
   body.code-practice-active #topics-list li {
-    padding: 6px 8px;
-    font-size: 0.75rem;
+    padding: 8px 10px;
+    font-size: 0.8rem;
   }
   
   body.code-practice-active #search-input {
-    padding: 0.4rem 0.4rem 0.4rem 1.8rem;
-    font-size: 0.8rem;
+    padding: 0.5rem 0.5rem 0.5rem 2rem;
+    font-size: 0.85rem;
   }
   
   body.code-practice-active .search-container i {
     font-size: 1rem;
-    left: 0.5rem;
+    left: 0.6rem;
   }
   
   .code-practice-container {
@@ -1736,7 +1734,18 @@ footer p {
   }
 }
 
-/* Dark overlay for mobile sidebar - Not needed for side-by-side layout */
+/* Mobile overlay for coding practice */
 .mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
   display: none;
+}
+
+.mobile-overlay.active {
+  display: block;
 }

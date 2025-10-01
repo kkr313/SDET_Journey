@@ -626,22 +626,21 @@ $(document).ready(function() {
         createPracticeInterfaces();
         setupCodingEventListeners();
     }
-    
-    /**
+      /**
      * Setup mobile overlay for coding practice
      */
     function setupMobileOverlay() {
-        if (!$('.mobile-overlay').length && window.innerWidth <= 992) {
+        // Only add mobile overlay for truly mobile devices
+        if (!$('.mobile-overlay').length && window.innerWidth <= 768) {
             $('body').append('<div class="mobile-overlay"></div>');
         }
         $('body').addClass('code-practice-active');
     }
-    
-    /**
+      /**
      * Setup sidebar enhancements for mobile
      */
     function setupSidebarEnhancements() {
-        if (window.innerWidth <= 992 && !$('#sidebar .sidebar-close').length) {
+        if (window.innerWidth <= 768 && !$('#sidebar .sidebar-close').length) {
             $('#sidebar').prepend('<button class="sidebar-close" style="position: absolute; top: 10px; right: 10px; background: var(--primary-color); color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; z-index: 10;"><i class="fas fa-times"></i></button>');
         }
     }
