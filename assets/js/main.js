@@ -16,19 +16,16 @@ $(document).ready(function() {
                 });
         });
     }
-    
-    // Define available topics (in a real app, this might come from an API)
+      // Define available topics (in a real app, this might come from an API)
     const topics = [
         { id: 'getting-started', title: 'Getting Started with SDET' },
         { id: 'manual-concepts', title: 'Manual Concepts' },
         { id: 'agile-methodology', title: 'Agile Methodology' },
         { id: 'ci-cd-pipelines', title: 'CI/CD Pipelines for Testing' },
         { id: 'api-testing', title: 'API Testing Fundamentals' },
-        // { id: 'code-interview', title: 'Coding Interview Prep' },
-        { id: 'selenium-webdriver', title: 'Selenium WebDriver Deep Dive' },
-        { id: 'mobile-testing', title: 'Mobile App Testing' },
-        { id: 'performance-testing', title: 'Performance Testing Basics' },
-        { id: 'test-design', title: 'Test Design Patterns' }
+        { id: 'code-practice', title: 'Coding Practice Questions' },
+        { id: 'test-automation-frameworks', title: 'Test Automation Frameworks' },
+        { id: 'code-interview', title: 'Coding Interview Prep' }
     ];
 
     // Initialize the application
@@ -386,6 +383,11 @@ $(document).ready(function() {
                 if (typeof hljs !== 'undefined') {
                     document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
                 }
+                
+                // Initialize coding practice interface if this is the code practice page
+                if (topicId === 'code-practice') {
+                    initializeCodingPractice();
+                }
             },
             error: function(xhr, status, error) {
                 $content.html(`
@@ -397,16 +399,15 @@ $(document).ready(function() {
                 `);
             }
         });
-    }
-
-    // --- Improved Topic Navigation ---
+    }    // --- Improved Topic Navigation ---
     const topicFiles = [
         { id: 'getting-started', title: 'Getting Started with SDET' },
         { id: 'manual-concepts', title: 'Manual Concepts' },
         { id: 'agile-methodology', title: 'Agile Methodology' },
-        { id: 'api-testing', title: 'API Testing Fundamentals' },
-        { id: 'test-automation-frameworks', title: 'Test Automation Frameworks' },
         { id: 'ci-cd-pipelines', title: 'CI/CD Pipelines for Testing' },
+        { id: 'api-testing', title: 'API Testing Fundamentals' },
+        { id: 'code-practice', title: 'Coding Practice Questions' },
+        { id: 'test-automation-frameworks', title: 'Test Automation Frameworks' },
         { id: 'code-interview', title: 'Coding Interview Prep' }
     ];
     let currentTopicIndex = 0;
@@ -521,4 +522,577 @@ $(document).ready(function() {
 
     // Initial topic nav setup
     updateTopicNav();
+
+    // Coding Practice Functionality
+    const codingSolutions = {
+        'two-sum': {
+            python: `def two_sum(nums, target):
+    """
+    Find two numbers that add up to target.
+    
+    Time Complexity: O(n)
+    Space Complexity: O(n)
+    """
+    seen = {}
+    
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
+    
+    return []
+
+# Test cases
+test_cases = [
+    ([2, 7, 11, 15], 9),
+    ([3, 2, 4], 6),
+    ([3, 3], 6)
+]
+
+for nums, target in test_cases:
+    result = two_sum(nums, target)
+    print(f"Input: nums = {nums}, target = {target}")
+    print(f"Output: {result}")
+    print()`,
+            javascript: `function twoSum(nums, target) {
+    /**
+     * Find two numbers that add up to target.
+     * 
+     * Time Complexity: O(n)
+     * Space Complexity: O(n)
+     */
+    const seen = new Map();
+    
+    for (let i = 0; i < nums.length; i++) {
+        const complement = target - nums[i];
+        if (seen.has(complement)) {
+            return [seen.get(complement), i];
+        }
+        seen.set(nums[i], i);
+    }
+    
+    return [];
+}
+
+// Test cases
+const testCases = [
+    [[2, 7, 11, 15], 9],
+    [[3, 2, 4], 6],
+    [[3, 3], 6]
+];
+
+testCases.forEach(([nums, target]) => {
+    const result = twoSum(nums, target);
+    console.log(\`Input: nums = [\${nums.join(', ')}], target = \${target}\`);
+    console.log(\`Output: [\${result.join(', ')}]\`);
+    console.log('');
+});`
+        },
+        'valid-palindrome': {
+            python: `def is_palindrome(s):
+    """
+    Check if string is a valid palindrome.
+    
+    Time Complexity: O(n)
+    Space Complexity: O(1)
+    """
+    left, right = 0, len(s) - 1
+    
+    while left < right:
+        # Skip non-alphanumeric characters
+        while left < right and not s[left].isalnum():
+            left += 1
+        while left < right and not s[right].isalnum():
+            right -= 1
+        
+        # Compare characters (case insensitive)
+        if s[left].lower() != s[right].lower():
+            return False
+        
+        left += 1
+        right -= 1
+    
+    return True
+
+# Test cases
+test_cases = [
+    "A man, a plan, a canal: Panama",
+    "race a car",
+    " "
+]
+
+for s in test_cases:
+    result = is_palindrome(s)
+    print(f'Input: "{s}"')
+    print(f"Output: {result}")
+    print()`,
+            javascript: `function isPalindrome(s) {
+    /**
+     * Check if string is a valid palindrome.
+     * 
+     * Time Complexity: O(n)
+     * Space Complexity: O(1)
+     */
+    let left = 0;
+    let right = s.length - 1;
+    
+    while (left < right) {
+        // Skip non-alphanumeric characters
+        while (left < right && !isAlphanumeric(s[left])) {
+            left++;
+        }
+        while (left < right && !isAlphanumeric(s[right])) {
+            right--;
+        }
+        
+        // Compare characters (case insensitive)
+        if (s[left].toLowerCase() !== s[right].toLowerCase()) {
+            return false;
+        }
+        
+        left++;
+        right--;
+    }
+    
+    return true;
+}
+
+function isAlphanumeric(char) {
+    return /[a-zA-Z0-9]/.test(char);
+}
+
+// Test cases
+const testCases = [
+    "A man, a plan, a canal: Panama",
+    "race a car",
+    " "
+];
+
+testCases.forEach(s => {
+    const result = isPalindrome(s);
+    console.log(\`Input: "\${s}"\`);
+    console.log(\`Output: \${result}\`);
+    console.log('');
+});`
+        },
+        'maximum-subarray': {
+            python: `def max_subarray(nums):
+    """
+    Find maximum sum of contiguous subarray (Kadane's Algorithm).
+    
+    Time Complexity: O(n)
+    Space Complexity: O(1)
+    """
+    max_sum = current_sum = nums[0]
+    
+    for num in nums[1:]:
+        current_sum = max(num, current_sum + num)
+        max_sum = max(max_sum, current_sum)
+    
+    return max_sum
+
+# Test cases
+test_cases = [
+    [-2, 1, -3, 4, -1, 2, 1, -5, 4],
+    [1],
+    [5, 4, -1, 7, 8]
+]
+
+for nums in test_cases:
+    result = max_subarray(nums)
+    print(f"Input: {nums}")
+    print(f"Output: {result}")
+    print()`,
+            javascript: `function maxSubarray(nums) {
+    /**
+     * Find maximum sum of contiguous subarray (Kadane's Algorithm).
+     * 
+     * Time Complexity: O(n)
+     * Space Complexity: O(1)
+     */
+    let maxSum = nums[0];
+    let currentSum = nums[0];
+    
+    for (let i = 1; i < nums.length; i++) {
+        currentSum = Math.max(nums[i], currentSum + nums[i]);
+        maxSum = Math.max(maxSum, currentSum);
+    }
+    
+    return maxSum;
+}
+
+// Test cases
+const testCases = [
+    [-2, 1, -3, 4, -1, 2, 1, -5, 4],
+    [1],
+    [5, 4, -1, 7, 8]
+];
+
+testCases.forEach(nums => {
+    const result = maxSubarray(nums);
+    console.log(\`Input: [\${nums.join(', ')}]\`);
+    console.log(\`Output: \${result}\`);
+    console.log('');
+});`
+        },
+        'binary-search': {
+            python: `def binary_search(nums, target):
+    """
+    Binary search in sorted array.
+    
+    Time Complexity: O(log n)
+    Space Complexity: O(1)
+    """
+    left, right = 0, len(nums) - 1
+    
+    while left <= right:
+        mid = (left + right) // 2
+        
+        if nums[mid] == target:
+            return mid
+        elif nums[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    
+    return -1
+
+# Test cases
+test_cases = [
+    ([-1, 0, 3, 5, 9, 12], 9),
+    ([-1, 0, 3, 5, 9, 12], 2),
+    ([5], 5)
+]
+
+for nums, target in test_cases:
+    result = binary_search(nums, target)
+    print(f"Input: nums = {nums}, target = {target}")
+    print(f"Output: {result}")
+    print()`,
+            javascript: `function binarySearch(nums, target) {
+    /**
+     * Binary search in sorted array.
+     * 
+     * Time Complexity: O(log n)
+     * Space Complexity: O(1)
+     */
+    let left = 0;
+    let right = nums.length - 1;
+    
+    while (left <= right) {
+        const mid = Math.floor((left + right) / 2);
+        
+        if (nums[mid] === target) {
+            return mid;
+        } else if (nums[mid] < target) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+    
+    return -1;
+}
+
+// Test cases
+const testCases = [
+    [[-1, 0, 3, 5, 9, 12], 9],
+    [[-1, 0, 3, 5, 9, 12], 2],
+    [[5], 5]
+];
+
+testCases.forEach(([nums, target]) => {
+    const result = binarySearch(nums, target);
+    console.log(\`Input: nums = [\${nums.join(', ')}], target = \${target}\`);
+    console.log(\`Output: \${result}\`);
+    console.log('');
+});`
+        },
+        'reverse-linked-list': {
+            python: `class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def reverse_list(head):
+    """
+    Reverse a singly linked list.
+    
+    Time Complexity: O(n)
+    Space Complexity: O(1)
+    """
+    prev = None
+    current = head
+    
+    while current:
+        next_temp = current.next
+        current.next = prev
+        prev = current
+        current = next_temp
+    
+    return prev
+
+def list_to_array(head):
+    """Helper function to convert linked list to array for printing."""
+    result = []
+    current = head
+    while current:
+        result.append(current.val)
+        current = current.next
+    return result
+
+def array_to_list(arr):
+    """Helper function to convert array to linked list."""
+    if not arr:
+        return None
+    head = ListNode(arr[0])
+    current = head
+    for val in arr[1:]:
+        current.next = ListNode(val)
+        current = current.next
+    return head
+
+# Test cases
+test_cases = [
+    [1, 2, 3, 4, 5],
+    [1, 2],
+    []
+]
+
+for arr in test_cases:
+    head = array_to_list(arr)
+    reversed_head = reverse_list(head)
+    result = list_to_array(reversed_head)
+    print(f"Input: {arr}")
+    print(f"Output: {result}")
+    print()`,
+            javascript: `class ListNode {
+    constructor(val = 0, next = null) {
+        this.val = val;
+        this.next = next;
+    }
+}
+
+function reverseList(head) {
+    /**
+     * Reverse a singly linked list.
+     * 
+     * Time Complexity: O(n)
+     * Space Complexity: O(1)
+     */
+    let prev = null;
+    let current = head;
+    
+    while (current !== null) {
+        const nextTemp = current.next;
+        current.next = prev;
+        prev = current;
+        current = nextTemp;
+    }
+    
+    return prev;
+}
+
+function listToArray(head) {
+    // Helper function to convert linked list to array for printing
+    const result = [];
+    let current = head;
+    while (current !== null) {
+        result.push(current.val);
+        current = current.next;
+    }
+    return result;
+}
+
+function arrayToList(arr) {
+    // Helper function to convert array to linked list
+    if (arr.length === 0) return null;
+    const head = new ListNode(arr[0]);
+    let current = head;
+    for (let i = 1; i < arr.length; i++) {
+        current.next = new ListNode(arr[i]);
+        current = current.next;
+    }
+    return head;
+}
+
+// Test cases
+const testCases = [
+    [1, 2, 3, 4, 5],
+    [1, 2],
+    []
+];
+
+testCases.forEach(arr => {
+    const head = arrayToList(arr);
+    const reversedHead = reverseList(head);
+    const result = listToArray(reversedHead);
+    console.log(\`Input: [\${arr.join(', ')}]\`);
+    console.log(\`Output: [\${result.join(', ')}]\`);
+    console.log('');
+});`
+        }
+    };
+
+    function initializeCodingPractice() {
+        // Find all code practice containers
+        $('.code-practice-container').each(function() {
+            const $container = $(this);
+            const questionId = $container.find('.question-id').data('question');
+            
+            if (!questionId || !codingSolutions[questionId]) return;
+            
+            // Create the practice interface
+            const practiceHTML = `
+                <div class="practice-tabs">
+                    <button class="practice-tab active" data-tab="explanation">Explanation</button>
+                    <button class="practice-tab" data-tab="python">Python Solution</button>
+                    <button class="practice-tab" data-tab="javascript">JavaScript Solution</button>
+                    <button class="practice-tab" data-tab="playground">Code Playground</button>
+                </div>
+                <div class="practice-content">
+                    <div class="tab-panel active" data-panel="explanation">
+                        <div class="solution-header">
+                            <h4>Optimal Solution Approach</h4>
+                            <div class="complexity-info">
+                                <span class="complexity-badge">Time: O(n)</span>
+                                <span class="complexity-badge">Space: O(n)</span>
+                            </div>
+                        </div>
+                        <p>The optimal approach uses a hash map to achieve O(n) time complexity. This is significantly better than the brute force O(n²) approach.</p>
+                    </div>
+                    
+                    <div class="tab-panel" data-panel="python">
+                        <div class="solution-header">
+                            <h4>Python Solution</h4>
+                            <div class="complexity-info">
+                                <span class="complexity-badge">Time: O(n)</span>
+                                <span class="complexity-badge">Space: O(n)</span>
+                            </div>
+                        </div>
+                        <pre><code class="language-python">${codingSolutions[questionId].python}</code></pre>
+                    </div>
+                    
+                    <div class="tab-panel" data-panel="javascript">
+                        <div class="solution-header">
+                            <h4>JavaScript Solution</h4>
+                            <div class="complexity-info">
+                                <span class="complexity-badge">Time: O(n)</span>
+                                <span class="complexity-badge">Space: O(n)</span>
+                            </div>
+                        </div>
+                        <pre><code class="language-javascript">${codingSolutions[questionId].javascript}</code></pre>
+                    </div>
+                    
+                    <div class="tab-panel" data-panel="playground">
+                        <div class="solution-header">
+                            <h4>Interactive Code Playground</h4>
+                            <div class="language-selector">
+                                <select class="playground-language">
+                                    <option value="python">Python</option>
+                                    <option value="javascript">JavaScript</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="code-editor-container">
+                            <textarea class="code-editor" data-question="${questionId}">${codingSolutions[questionId].python}</textarea>
+                        </div>
+                        <div class="editor-controls">
+                            <button class="run-code-btn">Run Code</button>
+                            <button class="reset-code-btn">Reset</button>
+                        </div>
+                        <div class="code-output" style="display: none;"></div>
+                    </div>
+                </div>
+            `;
+            
+            $container.html(practiceHTML);
+        });
+        
+        // Set up event listeners for tabs
+        $(document).on('click', '.practice-tab', function() {
+            const $tab = $(this);
+            const $container = $tab.closest('.code-practice-container');
+            const tabName = $tab.data('tab');
+            
+            // Update active tab
+            $container.find('.practice-tab').removeClass('active');
+            $tab.addClass('active');
+            
+            // Update active panel
+            $container.find('.tab-panel').removeClass('active');
+            $container.find(`[data-panel="${tabName}"]`).addClass('active');
+        });
+        
+        // Language selector for playground
+        $(document).on('change', '.playground-language', function() {
+            const $select = $(this);
+            const language = $select.val();
+            const $container = $select.closest('.code-practice-container');
+            const questionId = $container.find('.code-editor').data('question');
+            const $editor = $container.find('.code-editor');
+            
+            if (codingSolutions[questionId] && codingSolutions[questionId][language]) {
+                $editor.val(codingSolutions[questionId][language]);
+            }
+        });
+        
+        // Run code button
+        $(document).on('click', '.run-code-btn', function() {
+            const $btn = $(this);
+            const $container = $btn.closest('.code-practice-container');
+            const $editor = $container.find('.code-editor');
+            const $output = $container.find('.code-output');
+            const language = $container.find('.playground-language').val();
+            const code = $editor.val();
+            
+            $btn.prop('disabled', true).text('Running...');
+            $output.removeClass('output-success output-error').show();
+            
+            // Simulate code execution (in a real app, you'd send this to a backend)
+            setTimeout(() => {
+                try {
+                    if (language === 'javascript') {
+                        // Capture console.log output
+                        let output = '';
+                        const originalLog = console.log;
+                        console.log = (...args) => {
+                            output += args.join(' ') + '\n';
+                        };
+                        
+                        // Execute the code
+                        eval(code);
+                        
+                        // Restore console.log
+                        console.log = originalLog;
+                        
+                        $output.addClass('output-success').text(output || 'Code executed successfully!');
+                    } else {
+                        // For Python, we'll just show a success message
+                        $output.addClass('output-success').text('Python code syntax looks good!\n\n(Note: This is a demo. In a real implementation, code would be executed on a secure backend server.)');
+                    }
+                } catch (error) {
+                    $output.addClass('output-error').text(`Error: ${error.message}`);
+                }
+                
+                $btn.prop('disabled', false).text('Run Code');
+            }, 1000);
+        });
+        
+        // Reset code button
+        $(document).on('click', '.reset-code-btn', function() {
+            const $btn = $(this);
+            const $container = $btn.closest('.code-practice-container');
+            const $editor = $container.find('.code-editor');
+            const $output = $container.find('.code-output');
+            const language = $container.find('.playground-language').val();
+            const questionId = $editor.data('question');
+            
+            if (codingSolutions[questionId] && codingSolutions[questionId][language]) {
+                $editor.val(codingSolutions[questionId][language]);
+                $output.hide();
+            }
+        });
+    }
 });
