@@ -196,7 +196,122 @@
 
 ---
 
-## 15. Mobile App Extensions & Advanced Features
+## 15. Mobile Testing Terminology & File Formats
+
+### Mobile App File Formats
+**iOS App Formats:**
+- **IPA (iOS App Store Package):** Compressed archive containing iOS app and metadata for distribution
+- **APP Bundle:** Xcode-generated application bundle for iOS simulators
+- **DSYM (Debug Symbol):** Debug information files for crash analysis and symbolication
+- **Entitlements.plist:** Property list defining app capabilities and permissions
+- **Info.plist:** Configuration file containing app metadata and settings
+
+**Android App Formats:**
+- **APK (Android Package Kit):** Compiled Android application package for installation
+- **AAB (Android App Bundle):** Google Play's publishing format for optimized app delivery
+- **DEX (Dalvik Executable):** Compiled bytecode files for Android runtime
+- **Manifest.xml:** Application configuration and permission declarations
+- **ProGuard/R8:** Code obfuscation and optimization mapping files
+
+### Technical Abbreviations & Full Forms
+**Development & Testing:**
+- **SDK (Software Development Kit):** Tools and libraries for app development
+- **IDE (Integrated Development Environment):** Development software (Xcode, Android Studio)
+- **ADB (Android Debug Bridge):** Command-line tool for Android device communication
+- **LLDB (Low Level Debugger):** Apple's debugging tool for iOS applications
+- **CI/CD (Continuous Integration/Continuous Deployment):** Automated build and release pipelines
+- **API (Application Programming Interface):** Software communication protocols
+- **REST (Representational State Transfer):** Web service architectural style
+- **JSON (JavaScript Object Notation):** Data interchange format
+- **XML (eXtensible Markup Language):** Structured data markup language
+
+**Mobile Platform Specific:**
+- **iOS (iPhone Operating System):** Apple's mobile operating system
+- **macOS (Mac Operating System):** Apple's desktop operating system
+- **tvOS (Television Operating System):** Apple's TV platform operating system
+- **watchOS (Watch Operating System):** Apple's smartwatch operating system
+- **UI (User Interface):** Visual elements users interact with
+- **UX (User Experience):** Overall user interaction experience
+- **HIG (Human Interface Guidelines):** Apple's design principles
+- **Material Design:** Google's design language for Android
+
+**Testing Frameworks & Tools:**
+- **XCUITest (Xcode UI Testing):** Apple's native iOS UI testing framework
+- **Espresso:** Google's Android UI testing framework
+- **Appium:** Cross-platform mobile automation framework
+- **Calabash:** Cross-platform mobile testing framework
+- **Detox:** Gray-box end-to-end testing framework for React Native
+- **EarlGrey:** Google's iOS UI testing framework
+- **UIAutomator:** Android's native UI testing framework
+- **scrcpy (Screen Copy):** Open-source tool for displaying and controlling Android devices via USB/TCP
+
+### Security & Compliance Acronyms
+**Security Standards:**
+- **HTTPS (HyperText Transfer Protocol Secure):** Encrypted web communication protocol
+- **TLS (Transport Layer Security):** Cryptographic protocol for secure communication
+- **SSL (Secure Sockets Layer):** Predecessor to TLS encryption protocol
+- **OAuth (Open Authorization):** Authorization framework for secure API access
+- **JWT (JSON Web Token):** Secure token format for authentication
+- **2FA (Two-Factor Authentication):** Security process using two verification methods
+- **MFA (Multi-Factor Authentication):** Security using multiple verification factors
+- **SSO (Single Sign-On):** Authentication process for multiple applications
+
+**Compliance Regulations:**
+- **GDPR (General Data Protection Regulation):** EU privacy and data protection law
+- **CCPA (California Consumer Privacy Act):** California privacy protection legislation
+- **HIPAA (Health Insurance Portability and Accountability Act):** US healthcare privacy law
+- **PCI DSS (Payment Card Industry Data Security Standard):** Payment security requirements
+- **COPPA (Children's Online Privacy Protection Act):** US children's privacy law
+- **SOX (Sarbanes-Oxley Act):** US financial reporting and corporate governance law
+
+### Performance & Analytics
+**Performance Metrics:**
+- **CPU (Central Processing Unit):** Main processor performance measurement
+- **GPU (Graphics Processing Unit):** Graphics processor performance measurement
+- **RAM (Random Access Memory):** System memory usage measurement
+- **FPS (Frames Per Second):** Animation and video smoothness metric
+- **LCP (Largest Contentful Paint):** Web performance loading metric
+- **FID (First Input Delay):** Web performance interactivity metric
+- **CLS (Cumulative Layout Shift):** Web performance visual stability metric
+- **TTI (Time To Interactive):** Web performance responsiveness metric
+- **ANR (Application Not Responding):** Android app freeze detection
+
+**Analytics & Tracking:**
+- **KPI (Key Performance Indicator):** Business success measurement metrics
+- **CTR (Click-Through Rate):** User engagement measurement
+- **DAU (Daily Active Users):** User engagement frequency metric
+- **MAU (Monthly Active Users):** User retention measurement
+- **LTV (Lifetime Value):** Customer value over time metric
+- **ARPU (Average Revenue Per User):** Revenue efficiency metric
+- **ROI (Return On Investment):** Business profitability measurement
+
+### Network & Connectivity
+**Network Technologies:**
+- **WiFi (Wireless Fidelity):** Wireless local area network technology
+- **LTE (Long Term Evolution):** 4G wireless communication standard
+- **5G (Fifth Generation):** Latest wireless communication technology
+- **NFC (Near Field Communication):** Short-range wireless technology
+- **BLE (Bluetooth Low Energy):** Power-efficient Bluetooth technology
+- **GPS (Global Positioning System):** Satellite-based location technology
+- **VPN (Virtual Private Network):** Secure network connection technology
+- **CDN (Content Delivery Network):** Distributed content delivery system
+
+### Device & Hardware
+**Device Categories:**
+- **IoT (Internet of Things):** Connected smart device ecosystem
+- **AR (Augmented Reality):** Digital overlay on real-world environment
+- **VR (Virtual Reality):** Immersive digital environment technology
+- **ML (Machine Learning):** Artificial intelligence subset for pattern learning
+- **AI (Artificial Intelligence):** Computer systems mimicking human intelligence
+- **OCR (Optical Character Recognition):** Text extraction from images technology
+- **QR (Quick Response):** Two-dimensional barcode technology
+- **RFID (Radio Frequency Identification):** Wireless identification technology
+
+**Example Usage:** Testing banking app IPA (iOS App Store Package) file on multiple iOS devices to validate biometric authentication using Face ID and Touch ID, ensuring PCI DSS (Payment Card Industry Data Security Standard) compliance and GDPR (General Data Protection Regulation) privacy requirements.
+
+---
+
+## 16. Mobile App Extensions & Advanced Features
 **App Extensions (iOS):**
 - Today Widget testing
 - Share Extension functionality
@@ -215,7 +330,7 @@
 
 ---
 
-## 16. Advanced Mobile Testing Scenarios
+## 17. Advanced Mobile Testing Scenarios
 **Multi-App Workflows:**
 - App switching during critical operations
 - Data sharing between apps
@@ -238,7 +353,7 @@
 
 ---
 
-## 17. Device-Specific Testing
+## 18. Device-Specific Testing
 **iOS Specific:**
 - Face ID / Touch ID authentication
 - 3D Touch / Haptic Touch
@@ -263,7 +378,7 @@
 
 ---
 
-## 18. Platform Integration Testing
+## 19. Platform Integration Testing
 **iOS Integration:**
 - Siri integration and voice commands
 - Spotlight search functionality
@@ -287,7 +402,7 @@
 
 ---
 
-## 19. Specialized Mobile Testing Areas
+## 20. Specialized Mobile Testing Areas
 **Location-Based Services:**
 - GPS accuracy testing
 - Geofencing functionality
@@ -313,7 +428,7 @@
 
 ---
 
-## 20. Mobile Security & Privacy Testing
+## 21. Mobile Security & Privacy Testing
 **Data Protection:**
 - App Transport Security (iOS)
 - Network Security Config (Android)
@@ -336,7 +451,7 @@
 
 ---
 
-## 21. Mobile Performance Deep Dive
+## 22. Mobile Performance Deep Dive
 **App Startup Metrics:**
 - Cold start time measurement
 - Warm start optimization
@@ -360,7 +475,7 @@
 
 ---
 
-## 22. Mobile Accessibility Comprehensive
+## 23. Mobile Accessibility Comprehensive
 **Screen Reader Testing:**
 - VoiceOver navigation (iOS)
 - TalkBack functionality (Android)
@@ -384,7 +499,7 @@
 
 ---
 
-## 23. Mobile App Store Considerations
+## 24. Mobile App Store Considerations
 **App Store Optimization (ASO):**
 - App metadata testing
 - Screenshot automation
@@ -408,7 +523,7 @@
 
 ---
 
-## 24. Advanced Mobile Defect Patterns
+## 25. Advanced Mobile Defect Patterns
 **State Management Issues:**
 - Fragment lifecycle bugs (Android)
 - View controller memory leaks (iOS)
@@ -432,7 +547,7 @@
 
 ---
 
-## 25. Mobile Testing Metrics & KPIs
+## 26. Mobile Testing Metrics & KPIs
 **User Experience Metrics:**
 - App launch success rate
 - Crash-free session percentage
@@ -456,7 +571,7 @@
 
 ---
 
-## 26. Mobile Test Data Management
+## 27. Mobile Test Data Management
 **Test Data Categories:**
 - Device-specific configurations
 - User account variations
@@ -480,7 +595,7 @@
 
 ---
 
-## 27. Mobile CI/CD & Automation
+## 28. Mobile CI/CD & Automation
 **Build Automation:**
 - Multi-variant builds
 - Automated signing processes
@@ -504,7 +619,7 @@
 
 ---
 
-## 28. Emerging Mobile Technologies
+## 29. Emerging Mobile Technologies
 **5G Testing Considerations:**
 - Enhanced bandwidth utilization
 - Ultra-low latency features
@@ -528,7 +643,7 @@
 
 ---
 
-## 29. Mobile Testing Best Practices
+## 30. Mobile Testing Best Practices
 **Test Planning:**
 - Device matrix prioritization
 - Risk-based test selection
@@ -552,7 +667,7 @@
 
 ---
 
-## 30. Advanced Touch & Gesture Testing
+## 31. Advanced Touch & Gesture Testing
 **Finger Touch Interactions:**
 - Single tap vs double tap recognition
 - Long press duration thresholds
@@ -578,7 +693,7 @@
 
 ---
 
-## 31. Modern Web Authentication Testing
+## 32. Modern Web Authentication Testing
 **Web Passkeys (WebAuthn):**
 - Passkey creation and registration flow
 - Cross-device passkey synchronization
@@ -604,7 +719,7 @@
 
 ---
 
-## 32. Advanced Mobile Biometric Testing
+## 33. Advanced Mobile Biometric Testing
 **Fingerprint Authentication Deep Dive:**
 - Multiple fingerprint enrollment
 - Partial fingerprint recognition
@@ -630,7 +745,7 @@
 
 ---
 
-## 33. Haptic Feedback & Tactile Testing
+## 34. Haptic Feedback & Tactile Testing
 **Haptic Feedback Patterns:**
 - System haptic vs custom patterns
 - Haptic intensity customization
@@ -656,7 +771,7 @@
 
 ---
 
-## 34. Advanced Mobile Sensors Testing
+## 35. Advanced Mobile Sensors Testing
 **Motion Sensor Integration:**
 - Accelerometer accuracy testing
 - Gyroscope calibration validation
@@ -682,7 +797,7 @@
 
 ---
 
-## 35. Modern Mobile Payment & NFC Testing
+## 36. Modern Mobile Payment & NFC Testing
 **Contactless Payment Testing:**
 - NFC payment terminal compatibility
 - Payment card tokenization
@@ -708,7 +823,7 @@
 
 ---
 
-## 36. Progressive Web App (PWA) Advanced Testing
+## 37. Progressive Web App (PWA) Advanced Testing
 **Installation & Management:**
 - Add to home screen functionality
 - PWA installation prompts
@@ -734,7 +849,7 @@
 
 ---
 
-## 37. Mobile Gaming & Entertainment Testing
+## 38. Mobile Gaming & Entertainment Testing
 **Game-Specific Mobile Testing:**
 - Touch latency in gaming
 - Multi-touch gaming controls
@@ -760,7 +875,7 @@
 
 ---
 
-## 38. Accessibility Deep Dive Testing
+## 39. Accessibility Deep Dive Testing
 **Advanced Screen Reader Testing:**
 - Custom accessibility labels
 - Dynamic content announcements
@@ -786,7 +901,7 @@
 
 ---
 
-## 39. Cross-Platform Synchronization Testing
+## 40. Cross-Platform Synchronization Testing
 **Data Sync Scenarios:**
 - Real-time cross-device sync
 - Conflict resolution strategies
@@ -812,7 +927,7 @@
 
 ---
 
-## 40. Voice Interface & AI Testing
+## 41. Voice Interface & AI Testing
 **Voice Assistant Integration:**
 - Siri shortcuts functionality
 - Google Assistant actions
@@ -838,7 +953,7 @@
 
 ---
 
-## 41. API Testing for Mobile Apps
+## 42. API Testing for Mobile Apps
 **Mobile API Specific Testing:**
 - Network timeout handling on mobile networks
 - API response caching strategies
@@ -871,7 +986,7 @@
 
 ---
 
-## 42. Emerging Interface Testing
+## 43. Emerging Interface Testing
 **Foldable Device Scenarios:**
 - App continuity during fold transitions
 - Multi-window app behavior
@@ -897,7 +1012,7 @@
 
 ---
 
-## 43. Database Testing for Mobile Apps
+## 44. Database Testing for Mobile Apps
 **SQLite Local Database Testing:**
 - Database schema migration validation
 - Transaction rollback testing
@@ -923,7 +1038,7 @@
 
 ---
 
-## 44. Analytics & Crash Reporting Testing
+## 45. Analytics & Crash Reporting Testing
 **Analytics Data Accuracy:**
 - Event tracking validation
 - User journey mapping
@@ -949,7 +1064,7 @@
 
 ---
 
-## 45. Regulatory Compliance Testing
+## 46. Regulatory Compliance Testing
 **HIPAA Compliance (Healthcare Apps):**
 - PHI data encryption validation
 - Access control verification
@@ -979,32 +1094,6 @@
 - Safety feature verification
 
 **Example:** Testing medical app - ensure patient data never leaves device unencrypted, validate user consent flows, test data deletion capabilities.
-
----
-
-## 46. Mobile App Extensions & Widgets
-**iOS App Extensions:**
-- Share extension testing
-- Today widget functionality
-- Notification content extensions
-- Siri intent extensions
-- Keyboard extension validation
-
-**Android Widgets & Services:**
-- Home screen widget testing
-- Background service limitations
-- Quick settings tile functionality
-- Live wallpaper testing
-- Accessibility service validation
-
-**Cross-Platform Widget Testing:**
-- Widget update mechanisms
-- Configuration interface testing
-- Performance impact validation
-- Battery usage optimization
-- Data refresh strategies
-
-**Example:** Testing weather app widget - ensure accurate data refresh, validate configuration options, test battery impact of frequent updates.
 
 ---
 
