@@ -3189,36 +3189,36 @@ fetch('https://api.example.com/users', {
 - Study data models and relationships
 
 **2. Plan Test Cases**
-```python
-# Example test planning checklist
-api_test_checklist = {
-    "functional_tests": [
-        "Valid input data",
-        "Invalid input data", 
-        "Missing required fields",
-        "Extra fields in request",
-        "Boundary value testing"
-    ],
-    "authentication_tests": [
-        "Valid credentials",
-        "Invalid credentials",
-        "Expired tokens",
-        "Missing authentication"
-    ],
-    "business_logic_tests": [
-        "Workflow testing",
-        "Data consistency",
-        "State transitions",
-        "Business rule validation"
-    ],
-    "error_handling_tests": [
-        "4xx client errors",
-        "5xx server errors", 
-        "Network timeouts",
-        "Invalid response formats"
-    ]
-}
-```
+
+**Manual Test Planning Checklist:**
+
+**Functional Tests:**
+- ✅ Valid input data scenarios
+- ✅ Invalid input data validation
+- ✅ Missing required fields handling
+- ✅ Extra fields in request behavior
+- ✅ Boundary value testing
+- ✅ Data type validation
+
+**Authentication Tests:**
+- ✅ Valid credentials acceptance
+- ✅ Invalid credentials rejection
+- ✅ Expired tokens handling
+- ✅ Missing authentication response
+- ✅ Token refresh scenarios
+
+**Business Logic Tests:**
+- ✅ Workflow testing end-to-end
+- ✅ Data consistency verification
+- ✅ State transitions validation
+- ✅ Business rule enforcement
+
+**Error Handling Tests:**
+- ✅ 4xx client error responses
+- ✅ 5xx server error handling
+- ✅ Network timeout scenarios
+- ✅ Invalid response format handling
+- ✅ Graceful degradation testing
 
 **3. Set Up Test Environment**
 
@@ -3345,123 +3345,157 @@ api_test_checklist = {
 ### API Testing Best Practices
 
 **1. Test Independence**
-```python
-# ❌ Bad: Tests depend on each other
-def test_create_user():
-    response = requests.post('/users', json={"name": "John"})
-    global created_user_id
-    created_user_id = response.json()['id']
 
-def test_get_user():
-    response = requests.get(f'/users/{created_user_id}')  # Depends on previous test
+**❌ Poor Practice: Dependent Test Cases**
+*Manual Test Case 1: Create User*
+- Execute POST /users endpoint
+- Save user ID from response for next test
+- **Problem:** Next test depends on this test's success
 
-# ✅ Good: Each test is independent
-def test_create_user():
-    response = requests.post('/users', json={"name": "John"})
-    assert response.status_code == 201
+*Manual Test Case 2: Get User (Dependent)*
+- Use user ID from previous test
+- Execute GET /users/{id} endpoint
+- **Problem:** Fails if previous test failed
 
-def test_get_user():
-    # Create user specifically for this test
-    user_response = requests.post('/users', json={"name": "Jane"})
-    user_id = user_response.json()['id']
-    
-    response = requests.get(f'/users/{user_id}')
-    assert response.status_code == 200
-```
+**✅ Best Practice: Independent Test Cases**
+*Manual Test Case 1: Create User (Independent)*
+- Execute POST /users with valid data
+- Verify 201 status code
+- Verify response structure
+- Clean up: Delete created user
 
-**2. Comprehensive Assertions**
-```python
-def test_create_user_comprehensive():
-    payload = {"name": "John Doe", "email": "john@example.com", "age": 30}
-    response = requests.post('/users', json=payload)
-    
-    # Status code assertion
-    assert response.status_code == 201
-    
-    # Response time assertion
-    assert response.elapsed.total_seconds() < 2.0
-    
-    # Content type assertion
-    assert response.headers['Content-Type'] == 'application/json'
-    
-    # Response body structure assertions
-    user_data = response.json()
-    assert 'id' in user_data
-    assert isinstance(user_data['id'], int)
-    assert user_data['name'] == payload['name']
+*Manual Test Case 2: Get User (Independent)*
+- Prerequisite: Create a test user first
+- Execute GET /users/{id} endpoint
+- Verify 200 status code and user data
+- Clean up: Delete test user
+
+**2. Comprehensive Verification**
+
+**Manual Testing Verification Checklist:**
+
+**Status Code Verification:**
+- ✅ Verify correct HTTP status code (200, 201, 400, 404, etc.)
+- ✅ Document expected vs actual status codes
+- ✅ Test edge cases (unauthorized, forbidden, etc.)
+
+**Response Time Verification:**
+- ✅ Measure response time manually using browser dev tools
+- ✅ Document if response time exceeds 2 seconds
+- ✅ Test under different network conditions
+
+**Content Type Verification:**
+- ✅ Verify 'Content-Type' header (application/json, text/html, etc.)
+- ✅ Check response format matches expected type
+- ✅ Validate charset encoding if applicable
+
+**Response Body Structure Verification:**
+- ✅ Verify all required fields are present
+- ✅ Check data types (string, number, boolean, array)
+- ✅ Validate field values match input data
+- ✅ Confirm nested object structures
     assert user_data['email'] == payload['email']
     assert user_data['age'] == payload['age']
     
-    # Business logic assertions
-    assert user_data['id'] > 0
-    assert '@' in user_data['email']
-    assert user_data['age'] >= 18  # Minimum age requirement
-```
+    # Business logic assertions- ✅ Verify ID field exists and is positive number
+- ✅ Validate email format contains '@' symbol  
+- ✅ Check age meets business requirements (≥18)
+- ✅ Confirm all input data reflected in response
 
 **3. Error Testing**
-```python
-def test_error_scenarios():
-    error_test_cases = [
-        # Test case: (payload, expected_status, expected_error_message)
-        ({}, 400, "Missing required fields"),
-        ({"name": ""}, 400, "Name cannot be empty"),
-        ({"name": "John", "email": "invalid"}, 400, "Invalid email format"),
-        ({"name": "John", "email": "john@example.com", "age": -1}, 400, "Age must be positive"),
-        ({"name": "A" * 256}, 400, "Name too long"),
-    ]
-    
-    for payload, expected_status, expected_message in error_test_cases:
-        response = requests.post('/users', json=payload)
-        assert response.status_code == expected_status
-        
-        error_response = response.json()
-        assert 'error' in error_response
-        assert expected_message.lower() in error_response['error'].lower()
-```
+
+**Manual Error Testing Scenarios:**
+
+**Test Case 1: Missing Required Fields**
+- *Input:* Send empty JSON body `{}`
+- *Expected:* 400 status code
+- *Verify:* Error message mentions "Missing required fields"
+
+**Test Case 2: Empty Name Field**
+- *Input:* `{"name": ""}`
+- *Expected:* 400 status code  
+- *Verify:* Error message states "Name cannot be empty"
+
+**Test Case 3: Invalid Email Format**
+- *Input:* `{"name": "John", "email": "invalid"}`
+- *Expected:* 400 status code
+- *Verify:* Error message indicates "Invalid email format"
+
+**Test Case 4: Negative Age Value**
+- *Input:* `{"name": "John", "email": "john@example.com", "age": -1}`
+- *Expected:* 400 status code
+- *Verify:* Error message states "Age must be positive"
+
+**Test Case 5: Name Length Validation**
+- *Input:* `{"name": "A very long name exceeding maximum allowed length..."}`
+- *Expected:* 400 status code
+- *Verify:* Error message mentions "Name too long"
+
+**Error Testing Verification Steps:**
+1. Send each test case via Postman/curl
+2. Record actual status code received
+3. Copy and analyze error response body
+4. Compare error message with expected text
+5. Document any discrepancies
 
 **4. Data Cleanup**
-```python
-import pytest
 
-class TestUserAPI:
+**Manual Data Cleanup Strategy:**
     def setUp(self):
         self.created_users = []
     
     def tearDown(self):
         # Clean up created test data
-        for user_id in self.created_users:
-            try:
-                requests.delete(f'/users/{user_id}')
-            except:
-                pass  # Ignore cleanup errors
-    
-    def create_test_user(self, user_data):
-        response = requests.post('/users', json=user_data)
-        if response.status_code == 201:
-            user_id = response.json()['id']
-            self.created_users.append(user_id)
-        return response
-```
+        for user_id in self.created_users:**Test Data Management:**
+- Keep track of all test users created during testing
+- Record user IDs in a test log or spreadsheet
+- Clean up test data after each test session
+- Use clearly identifiable test data (e.g., names starting with "TEST_")
+
+**Cleanup Checklist:**
+1. List all test users created during session
+2. Delete each test user via DELETE /users/{id} endpoint
+3. Verify deletion with GET request (should return 404)
+4. Document any users that couldn't be deleted
+5. Clear test data from any dependent systems
+
+**Post-Test Verification:**
+- Confirm test environment returned to clean state
+- Verify no test data remains in database
+- Check that test didn't affect production data
+- Reset any modified configuration settings
 
 **5. Environment Management**
-```python
-# config.py
-import os
 
-class APITestConfig:
-    BASE_URL = os.getenv('API_BASE_URL', 'https://api-staging.example.com')
-    AUTH_TOKEN = os.getenv('API_AUTH_TOKEN', 'default_test_token')
-    TIMEOUT = int(os.getenv('API_TIMEOUT', '30'))
-    RETRY_ATTEMPTS = int(os.getenv('API_RETRY_ATTEMPTS', '3'))
-    
-    # Environment-specific settings
-    if 'staging' in BASE_URL:
-        MAX_CONCURRENT_USERS = 10
-        RATE_LIMIT_THRESHOLD = 100
-    elif 'production' in BASE_URL:
-        MAX_CONCURRENT_USERS = 5
-        RATE_LIMIT_THRESHOLD = 50
-```
+**Manual Environment Configuration:**
+
+**Environment Settings Documentation:**
+- **Base URL:** `https://api-staging.example.com`
+- **Authentication:** Test API key or bearer token
+- **Timeout:** 30 seconds for all requests
+- **Retry Policy:** 3 attempts for failed requests
+
+**Environment-Specific Test Configurations:**
+
+**Staging Environment:**
+- **Concurrent Users:** Maximum 10 simultaneous requests
+- **Rate Limit:** 100 requests per minute
+- **Data Persistence:** Temporary (cleaned daily)
+- **Monitoring:** Enhanced logging enabled
+
+**Production Environment:**
+- **Concurrent Users:** Maximum 5 simultaneous requests  
+- **Rate Limit:** 50 requests per minute
+- **Data Persistence:** Permanent (requires careful cleanup)
+- **Monitoring:** Minimal testing during off-peak hours
+
+**Environment Configuration Checklist:**
+1. ✅ Verify correct base URL for target environment
+2. ✅ Confirm authentication token is valid
+3. ✅ Test network connectivity and timeouts
+4. ✅ Validate rate limiting thresholds
+5. ✅ Review data cleanup policies
+6. ✅ Check monitoring and logging setup
 
 ### Common API Testing Challenges
 
@@ -3474,67 +3508,100 @@ def test_dynamic_data():
     users = response.json()
     assert len(users) == 5  # This might fail if data changes
     
-    # ✅ Solution: Create your own test data
-    # Create test users
-    test_users = []
-    for i in range(3):
-        user_response = requests.post('/users', json={"name": f"TestUser{i}"})
-        test_users.append(user_response.json()['id'])
-    
-    # Test with your data
-    response = requests.get('/users')
-    users = response.json()
-    test_user_ids = [user['id'] for user in users if user['id'] in test_users]
-    assert len(test_user_ids) == 3
-```
+    **✅ Solution: Create Your Own Test Data**
+
+**Manual Test Data Creation:**
+1. **Create Test Users:**
+   - Send POST /users with `{"name": "TestUser1"}`
+   - Send POST /users with `{"name": "TestUser2"}`  
+   - Send POST /users with `{"name": "TestUser3"}`
+   - Record each user ID returned
+
+2. **Test with Your Data:**
+   - Send GET /users to retrieve all users
+   - Manually verify your 3 test users are present
+   - Check user IDs match the ones you created
+   - Confirm user names are "TestUser1", "TestUser2", "TestUser3"
+
+3. **Cleanup:**
+   - Delete each test user using DELETE /users/{id}
+   - Verify deletion with GET requests
 
 **2. Asynchronous Operations**
-```python
-import time
 
-def test_async_operation():
-    # Start async operation
-    response = requests.post('/users/bulk-import', json={"file_url": "test_data.csv"})
-    assert response.status_code == 202  # Accepted
-    
-    job_id = response.json()['job_id']
-    
-    # Poll for completion
-    max_wait_time = 60  # seconds
-    poll_interval = 2   # seconds
-    start_time = time.time()
-    
-    while time.time() - start_time < max_wait_time:
-        status_response = requests.get(f'/jobs/{job_id}')
-        job_status = status_response.json()['status']
-        
-        if job_status == 'completed':
-            break
-        elif job_status == 'failed':
-            raise AssertionError(f"Job failed: {status_response.json()}")
-        
-        time.sleep(poll_interval)
-    else:
-        raise AssertionError("Job did not complete within expected time")
-    
-    # Verify results
-    result_response = requests.get(f'/jobs/{job_id}/results')
-    assert result_response.status_code == 200
+**Manual Testing of Async Operations:**
+
+**Test Case: Bulk Import Operation**
+
+**Step 1: Initiate Async Operation**
+- Send POST /users/bulk-import with `{"file_url": "test_data.csv"}`
+- Verify response status is 202 (Accepted)
+- Record the job_id from response body
+
+**Step 2: Manual Polling for Completion**
+- **Polling Strategy:** Check status every 2 seconds
+- **Maximum Wait Time:** 60 seconds
+- **Poll Endpoint:** GET /jobs/{job_id}/status
+
+**Manual Polling Checklist:**
+1. ✅ Send GET /jobs/{job_id}/status
+2. ✅ Record response status and job state
+3. ✅ If status is "pending" or "running", wait 2 seconds
+4. ✅ Repeat until status is "completed" or "failed"
+5. ✅ If 60 seconds elapsed, document timeout issue
+
+**Step 3: Manual Status Verification**
+- **Completion Check:** Job status should be "completed"
+- **Failure Handling:** If status is "failed", document error details
+- **Timeout Handling:** If 60 seconds pass, document timeout issue
+
+**Step 4: Results Verification**
+- Send GET /jobs/{job_id}/results
+- Verify response status is 200
+- Check results match expected bulk import outcome
+- Validate imported data appears in system
+
+**Async Testing Documentation Template:**
+```
+Test: Bulk Import Operation
+Job ID: [record_here]
+Start Time: [timestamp]
+Completion Time: [timestamp]
+Status Checks: [list each polling attempt]
+Final Status: [completed/failed/timeout]
+Results Verified: [yes/no]
+Issues Found: [document any problems]
 ```
 
 **3. Rate Limiting**
-```python
-def test_with_rate_limiting():
-    successful_requests = 0
-    rate_limited_requests = 0
-    
-    for i in range(150):  # Test beyond rate limit
-        response = requests.get('/api/data')
-        
-        if response.status_code == 200:
-            successful_requests += 1
-        elif response.status_code == 429:  # Too Many Requests
-            rate_limited_requests += 1
+
+**Manual Rate Limiting Testing:**
+
+**Test Objective:** Verify API enforces rate limits properly
+
+**Test Approach:**
+1. **Baseline Testing:** Send normal requests to establish baseline
+2. **Load Testing:** Gradually increase request frequency
+3. **Threshold Testing:** Exceed rate limit to trigger 429 responses
+4. **Recovery Testing:** Verify system recovers after rate limit period
+
+**Manual Rate Limiting Test Process:**
+
+**Phase 1: Normal Request Testing**
+- Send 10 requests to GET /api/data with 1-second intervals
+- Record response times and status codes
+- All should return 200 OK
+
+**Phase 2: Increased Load Testing**
+- Send 50 requests with 0.5-second intervals
+- Monitor for any rate limiting warnings
+- Document response patterns
+
+**Phase 3: Rate Limit Threshold Testing**
+- Send 150 rapid requests (as fast as possible)
+- Count successful requests (200 status)
+- Count rate-limited requests (429 status)
+- Record at what point rate limiting begins
             # Wait before continuing
             time.sleep(1)
         else:
@@ -3549,156 +3616,71 @@ def test_with_rate_limiting():
 
 ## API Testing Tools
 
-### 1. Postman (Beginner Friendly)
+### 1. Postman (Manual Testing Focus)
 
-**Features:**
-- GUI-based interface
-- Collection organization
-- Environment variables
-- Pre/post scripts
-- Team collaboration
-- Mock servers
+**Classification:** Manual Testing Tool
 
-**Getting Started with Postman:**
+**Features for Manual Testing:**
+- GUI-based interface for easy manual request creation
+- Collection organization for grouping related tests
+- Environment variables for different test environments
+- Manual response inspection and validation
+- Team collaboration on manual test collections
+- Mock servers for testing without backend
 
-1. **Basic Request Setup:**
-```javascript
-// Pre-request Script
-pm.environment.set("timestamp", Date.now());
-pm.globals.set("baseUrl", "https://api.example.com");
-```
+**Manual Testing with Postman:**
 
-2. **Response Validation:**
-```javascript
-// Test Script
-pm.test("Status code is 200", function () {
-    pm.response.to.have.status(200);
-});
+**1. Basic Manual Request Setup:**
+- **Step 1:** Create new request in Postman
+- **Step 2:** Set request method (GET, POST, PUT, DELETE)
+- **Step 3:** Enter API endpoint URL
+- **Step 4:** Add headers manually (Content-Type, Authorization)
+- **Step 5:** Add request body (JSON/XML) if needed
+- **Step 6:** Send request and inspect response
 
-pm.test("Response time is less than 500ms", function () {
-    pm.expect(pm.response.responseTime).to.be.below(500);
-});
+**2. Manual Response Validation:**
+- **Status Code Check:** Verify response shows expected status (200, 201, 400, etc.)
+- **Response Time:** Check response time is under acceptable threshold
+- **Response Body:** Manually inspect JSON/XML structure and data
+- **Headers:** Verify response headers contain expected values
 
-pm.test("Response contains user data", function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData).to.have.property('id');
-    pm.expect(jsonData).to.have.property('name');
-    pm.expect(jsonData.email).to.include("@");
-});
+**3. Manual Data-Driven Testing:**
+- **Create Test Cases:** Document different input scenarios in Excel/CSV
+- **Manual Execution:** Run each test case manually in Postman
+- **Results Tracking:** Document pass/fail results for each scenario
 
-pm.test("Response schema validation", function() {
-    const schema = {
-        "type": "object",
-        "required": ["id", "name", "email"],
-        "properties": {
-            "id": { "type": "integer" },
-            "name": { "type": "string", "minLength": 1 },
-            "email": { "type": "string", "format": "email" },
-            "age": { "type": "integer", "minimum": 0, "maximum": 150 }
-        }
-    };
-    pm.expect(pm.response.json()).to.be.jsonSchema(schema);
-});
-```
+**Manual Testing Checklist for Postman:**
+- ✅ Request method is correct
+- ✅ URL is properly formatted
+- ✅ Headers are set correctly
+- ✅ Request body is valid JSON/XML
+- ✅ Status code matches expectation
+- ✅ Response contains required fields
+- ✅ Response time is acceptable
+- ✅ Error responses are meaningful
 
-3. **Data-Driven Testing:**
-```javascript
-// Use CSV/JSON data files
-pm.test("User creation with test data", function() {
-    const testData = pm.iterationData.get("userData");
-    // Test logic using testData
-});
-```
+### 2. Manual Testing Alternatives to Automation Tools
 
-### 2. REST Assured (Java)
+**Instead of REST Assured/Automation Tools, Use Manual Approaches:**
 
-**Features:**
-- BDD-style syntax
-- Strong integration with Java ecosystem
-- Excellent reporting
-- Schema validation
+**Manual Test Planning:**
+1. **Create Test Matrix:** Document all test scenarios in spreadsheet
+2. **Environment Setup:** Configure Postman environments for different servers
+3. **Test Data Preparation:** Prepare valid/invalid data sets for manual testing
+4. **Execution Tracking:** Use simple checklist format for manual execution
 
-**REST Assured Examples:**
+**Manual Test Execution Process:**
+1. **Test Case Setup:** Open Postman, select appropriate environment
+2. **Request Configuration:** Manually configure each request parameter
+3. **Response Verification:** Visually inspect response data and status
+4. **Result Documentation:** Record pass/fail status with screenshots
+5. **Issue Reporting:** Create detailed bug reports for failures
 
-1. **Basic Test:**
-```java
-@Test
-public void testGetUser() {
-    given()
-        .header("Content-Type", "application/json")
-        .auth().oauth2(accessToken)
-        .pathParam("userId", 1)
-    .when()
-        .get("/api/users/{userId}")
-    .then()
-        .statusCode(200)
-        .body("name", equalTo("John Doe"))
-        .body("email", equalTo("john@example.com"))
-        .body("id", notNullValue())
-        .time(lessThan(2000L));
-}
-```
-
-2. **Complex Validations:**
-```java
-@Test
-public void testUserCreationWithValidation() {
-    User newUser = User.builder()
-        .name("Jane Smith")
-        .email("jane@example.com")
-        .age(25)
-        .build();
-    
-    ValidatableResponse response = given()
-        .contentType(ContentType.JSON)
-        .body(newUser)
-    .when()
-        .post("/api/users")
-    .then()
-        .statusCode(201)
-        .body("name", equalTo(newUser.getName()))
-        .body("email", equalTo(newUser.getEmail()))
-        .body("id", instanceOf(Integer.class))
-        .header("Location", containsString("/api/users/"));
-    
-    // Extract ID for cleanup
-    int userId = response.extract().path("id");
-    createdUserIds.add(userId);
-}
-```
-
-3. **Data-Driven Testing:**
-```java
-@ParameterizedTest
-@CsvSource({
-    "John, john@example.com, 30, 201",
-    "Jane, jane@example.com, 25, 201",
-    ", missing@example.com, 30, 400",
-    "Bob, invalid-email, 30, 400",
-    "Alice, alice@example.com, -5, 400"
-})
-public void testUserCreationWithVariousInputs(String name, String email, int age, int expectedStatus) {
-    given()
-        .contentType(ContentType.JSON)
-        .body(Map.of("name", name, "email", email, "age", age))
-    .when()
-        .post("/api/users")
-    .then()
-        .statusCode(expectedStatus);
-}
-```
-
-### 3. Python Requests + pytest
-
-**Note:** This section has been converted to focus on **manual testing approaches** rather than automation.
-
-**Manual Testing Alternatives to Python Automation:**
-
-**Instead of Python Scripts, Use Manual Tools:**
-
-1. **Postman for Manual Test Structure:**
-   - **Create Collection:** "User API Manual Tests"
-   - **Setup Environment Variables:** base_url, content_type, auth_token
+**Manual Testing Benefits:**
+- **Exploratory Testing:** Can discover unexpected issues through human observation
+- **Usability Validation:** Can assess API ease-of-use from developer perspective
+- **Context Awareness:** Human testers can apply business logic during testing
+- **No Code Maintenance:** No scripts to maintain or debug
    - **Manual Test Scenarios:**
      - User Creation (Valid/Invalid data)
      - User Retrieval by ID
@@ -4022,92 +4004,157 @@ newman run collection.json \
 **2. Test Categories:**
 
 **Happy Path Tests (30%):**
-```python
-def test_successful_user_registration():
-    """Test successful user registration flow"""
-    user_data = {
-        "name": "John Doe",
-        "email": "john@example.com", 
-        "password": "SecurePass123!"
-    }
-    
-    response = requests.post("/api/register", json=user_data)
-    
-    assert response.status_code == 201
-    assert "id" in response.json()
-    assert response.json()["email"] == user_data["email"]
-```
+
+**Manual Test Case: Successful User Registration**
+
+**Test Objective:** Verify user can successfully register with valid data
+
+**Test Steps:**
+1. **Prepare Test Data:**
+   - Name: "John Doe"
+   - Email: "john@example.com" 
+   - Password: "SecurePass123!"
+
+2. **Execute Request:**
+   - Send POST to /api/register
+   - Include JSON body with test data
+   - Record response time
+
+3. **Verify Response:**
+   - ✅ Status code is 201 (Created)
+   - ✅ Response body contains user ID
+   - ✅ Email in response matches input email
+   - ✅ Password not returned in response
+   - ✅ Response time under 2 seconds
 
 **Edge Cases (40%):**
-```python
-@pytest.mark.parametrize("invalid_data", [
-    {"name": "", "email": "test@example.com", "password": "pass123"},  # Empty name
-    {"name": "John", "email": "invalid-email", "password": "pass123"},  # Invalid email
-    {"name": "John", "email": "test@example.com", "password": "123"},    # Weak password
-    {"name": "A" * 256, "email": "test@example.com", "password": "pass123"},  # Name too long
-])
-def test_user_registration_validation(invalid_data):
-    response = requests.post("/api/register", json=invalid_data)
-    assert response.status_code == 400
-    assert "errors" in response.json()
-```
+
+**Manual Edge Case Testing:**
+
+**Test Case 1: Empty Name Field**
+- *Input:* `{"name": "", "email": "test@example.com", "password": "pass123"}`
+- *Expected:* 400 status, error about empty name
+- *Verify:* Error message mentions name requirement
+
+**Test Case 2: Invalid Email Format**
+- *Input:* `{"name": "John", "email": "invalid-email", "password": "pass123"}`
+- *Expected:* 400 status, email validation error
+- *Verify:* Error message specifies email format issue
+
+**Test Case 3: Weak Password**
+- *Input:* `{"name": "John", "email": "test@example.com", "password": "123"}`
+- *Expected:* 400 status, password strength error
+- *Verify:* Error message explains password requirements
+
+**Test Case 4: Name Too Long**
+- *Input:* Name field with 256 characters
+- *Expected:* 400 status, name length error
+- *Verify:* Error message mentions character limit
+
+**Edge Case Testing Checklist:**
+- ✅ Test each validation rule individually
+- ✅ Record actual vs expected error messages
+- ✅ Verify error response structure consistency
+- ✅ Check HTTP status codes are appropriate
+- ✅ Document any unexpected behaviors
 
 **Error Scenarios (30%):**
-```python
-def test_duplicate_user_registration():
-    """Test registration with existing email"""
-    user_data = {
+
+**Manual Error Scenario Testing:**
+
+**Test Case: Duplicate User Registration**
         "name": "John Doe",
         "email": "existing@example.com",
         "password": "SecurePass123!"
     }
-    
-    # First registration
-    response1 = requests.post("/api/register", json=user_data)
-    assert response1.status_code == 201
-    
-    # Duplicate registration
-    response2 = requests.post("/api/register", json=user_data)
-    assert response2.status_code == 409
-    assert "already exists" in response2.json()["message"].lower()
+  **Test Objective:** Verify system prevents duplicate user registration
+
+**Test Steps:**
+1. **First Registration:**
+   - Send POST /api/register with unique test data
+   - Verify 201 status (successful registration)
+   - Record user details for duplicate attempt
+
+2. **Duplicate Registration Attempt:**
+   - Send POST /api/register with exact same data
+   - Verify 409 status (Conflict)
+   - Check error message contains "already exists"
+
+3. **Cleanup:**
+   - Delete the test user created
+   - Verify deletion was successful
+
+**Error Scenario Documentation:**
+```
+Test: Duplicate Registration Prevention
+First Registration: [timestamp] - Status: 201
+Duplicate Attempt: [timestamp] - Status: 409
+Error Message: "[record actual message]"
+Cleanup Status: [completed/failed]
 ```
 
 ### Test Data Management
 
 **1. Test Data Categories:**
-- **Static Data:** Predefined test data
-- **Dynamic Data:** Generated during test execution
-- **External Data:** From files, databases, APIs
+- **Static Data:** Predefined test datasets stored in files
+- **Dynamic Data:** Generated fresh for each test execution
+- **External Data:** Retrieved from external sources (files, databases, APIs)
 
-**2. Test Data Strategies:**
+**2. Manual Test Data Strategies:**
 
-**Factory Pattern:**
-```python
-class UserFactory:
-    @staticmethod
-    def create_user(**kwargs):
-        default_data = {
-            "name": fake.name(),
-            "email": fake.email(),
-            "age": fake.random_int(18, 65),
-            "phone": fake.phone_number()
-        }
-        default_data.update(kwargs)
-        return default_data
-    
-    @staticmethod
-    def create_admin_user():
-        return UserFactory.create_user(
-            role="admin",
-            permissions=["read", "write", "delete"]
-        )
+**Test Data Factory Approach (Manual):**
 
-# Usage
-def test_user_creation():
-    user_data = UserFactory.create_user(age=25)
-    response = requests.post("/api/users", json=user_data)
-    assert response.status_code == 201
+**User Test Data Templates:**
+```json
+{
+  "valid_user_template": {
+    "name": "Test User [timestamp]",
+    "email": "testuser[timestamp]@example.com",
+    "age": 25,
+    "phone": "+1-555-0123"
+  },
+  "invalid_user_templates": [
+    {"name": "", "email": "test@example.com", "age": 25},
+    {"name": "Test", "email": "invalid-email", "age": 25},
+    {"name": "Test", "email": "test@example.com", "age": -1}
+  ]
+}
 ```
+
+**Manual Data Generation Process:**
+1. **Unique Identifiers:** Use timestamps or random numbers
+2. **Email Uniqueness:** Append timestamp to email addresses
+3. **Phone Numbers:** Use test phone number formats
+4. **Names:** Use clearly identifiable test prefixes
+
+**Test Data Management Checklist:**
+- ✅ Ensure test data is clearly identifiable
+- ✅ Use unique identifiers to avoid conflicts
+- ✅ Prepare both valid and invalid datasets
+- ✅ Document data requirements for each test
+- ✅ Plan cleanup strategy for test data
+
+**Manual Test Data Creation:**
+
+**Admin User Test Data:**
+```json
+{
+  "admin_user_template": {
+    "name": "Admin Test User [timestamp]",
+    "email": "admin[timestamp]@example.com",
+    "role": "admin",
+    "permissions": ["read", "write", "delete"],
+    "age": 30
+  }
+}
+```
+
+**Test Data Usage in Manual Testing:**
+1. **Prepare Test Data:** Create JSON templates for different user types
+2. **Customize Data:** Replace [timestamp] with actual values
+3. **Execute Test:** Send POST /api/users with prepared data
+4. **Verify Creation:** Check 201 status and response structure
+5. **Cleanup:** Delete test user after test completion
 
 **Builder Pattern:**
 ```python
@@ -4127,42 +4174,57 @@ class UserBuilder:
         self.user_data["age"] = age
         return self
     
-    def build(self):
-        return self.user_data
+    def build(self):    return self.user_data
 
-# Usage
-def test_user_creation():
-    user_data = (UserBuilder()
-                .with_name("John Doe")
-                .with_email("john@example.com")
-                .with_age(30)
-                .build())
-    
-    response = requests.post("/api/users", json=user_data)
-    assert response.status_code == 201
-```
+**Manual Builder Pattern Usage:**
+
+**Test Data Construction Process:**
+1. **Start with Base Template:** Use standard user data template
+2. **Customize Required Fields:** 
+   - Name: "John Doe"
+   - Email: "john@example.com"
+   - Age: 30
+3. **Build Final Test Data:** Combine all fields into JSON
+4. **Execute Test:** Send POST /api/users with constructed data
+5. **Verify Response:** Check 201 status and response structure
+
+**Manual Test Data Builder Checklist:**
+- ✅ Start with complete data template
+- ✅ Modify only necessary fields for test case
+- ✅ Ensure all required fields are present
+- ✅ Validate data before sending request
+- ✅ Document the data construction process
 
 ### Environment Management
 
-**Environment Configuration:**
-```python
-import os
-from dataclasses import dataclass
+**Manual Environment Configuration:**
+    **Environment Configuration Settings:**
 
-@dataclass
-class APIConfig:
-    base_url: str
-    api_key: str
-    timeout: int
-    retry_attempts: int
+**Development Environment:**
+- **Base URL:** `http://localhost:3000`
+- **API Key:** `dev-key-123`
+- **Timeout:** 30 seconds
+- **Retry Attempts:** 3
 
-def get_config():
-    env = os.getenv("TEST_ENV", "staging")
-    
-    configs = {
-        "development": APIConfig(
-            base_url="http://localhost:3000",
-            api_key="dev-key-123",
+**Staging Environment:**
+- **Base URL:** `https://staging-api.example.com`
+- **API Key:** Environment variable `STAGING_API_KEY`
+- **Timeout:** 10 seconds
+- **Retry Attempts:** 2
+
+**Production Environment:**
+- **Base URL:** `https://api.example.com`
+- **API Key:** Environment variable `PROD_API_KEY`
+- **Timeout:** 5 seconds
+- **Retry Attempts:** 1 (careful testing only)
+
+**Manual Environment Setup Checklist:**
+1. ✅ Verify correct base URL for target environment
+2. ✅ Confirm API key is valid and has proper permissions
+3. ✅ Test connectivity with simple GET request
+4. ✅ Validate timeout settings work as expected
+5. ✅ Document retry behavior for failed requests
+6. ✅ Ensure environment-specific test data is available
             timeout=30,
             retry_attempts=3
         ),
@@ -5162,156 +5224,126 @@ Browser Security Tab Check:
 - **Example:** Running load for 24 hours
 - **Goal:** Detect memory leaks and gradual degradation
 
-### Performance Testing with Python
+### Manual Performance Testing Approaches
 
-**Simple Load Testing Framework:**
-```python
-import requests
-import time
-import threading
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import statistics
+**Manual Performance Testing with Postman:**
 
-class APIPerformanceTester:
-    def __init__(self, base_url, auth_token=None):
-        self.base_url = base_url
-        self.headers = {}
-        if auth_token:
-            self.headers['Authorization'] = f'Bearer {auth_token}'
-        
-        self.results = []
-        self.errors = []
-    
-    def single_request(self, endpoint, method='GET', payload=None):
-        """Make a single API request and measure performance"""
-        start_time = time.time()
-        
-        try:
-            if method == 'GET':
-                response = requests.get(
-                    f'{self.base_url}{endpoint}', 
-                    headers=self.headers,
-                    timeout=30
-                )
-            elif method == 'POST':
-                response = requests.post(
-                    f'{self.base_url}{endpoint}', 
-                    headers=self.headers,
-                    json=payload,
-                    timeout=30
-                )
-            
-            end_time = time.time()
-            response_time = end_time - start_time
-            
-            result = {
-                'endpoint': endpoint,
-                'method': method,
-                'status_code': response.status_code,
-                'response_time': response_time,
-                'success': response.status_code < 400,
-                'timestamp': start_time
-            }
-            
-            return result
-            
-        except Exception as e:
-            end_time = time.time()
-            error = {
-                'endpoint': endpoint,
-                'method': method,
-                'error': str(e),
-                'response_time': end_time - start_time,
-                'success': False,
-                'timestamp': start_time
-            }
-            return error
-    
-    def load_test(self, endpoint, num_requests=100, concurrent_users=10, method='GET', payload=None):
-        """Run load test with multiple concurrent users"""
-        print(f"Starting load test: {num_requests} requests with {concurrent_users} concurrent users")
-        
-        with ThreadPoolExecutor(max_workers=concurrent_users) as executor:
-            futures = []
-            
-            for i in range(num_requests):
-                future = executor.submit(self.single_request, endpoint, method, payload)
-                futures.append(future)
-            
-            # Collect results
-            for future in as_completed(futures):
-                result = future.result()
-                if result['success']:
-                    self.results.append(result)
-                else:
-                    self.errors.append(result)
-        
-        return self.analyze_results()
-    
-    def analyze_results(self):
-        """Analyze performance test results"""
-        if not self.results:
-            return {"error": "No successful requests to analyze"}
-        
-        response_times = [r['response_time'] for r in self.results]
-        
-        analysis = {
-            'total_requests': len(self.results) + len(self.errors),
-            'successful_requests': len(self.results),
-            'failed_requests': len(self.errors),
-            'success_rate': len(self.results) / (len(self.results) + len(self.errors)) * 100,
-            'avg_response_time': statistics.mean(response_times),
-            'min_response_time': min(response_times),
-            'max_response_time': max(response_times),
-            'median_response_time': statistics.median(response_times),
-            'p95_response_time': self.percentile(response_times, 95),
-            'p99_response_time': self.percentile(response_times, 99),
-            'requests_per_second': len(self.results) / max(response_times) if response_times else 0
-        }
-        
-        return analysis
-    
-    def percentile(self, data, percentile):
-        """Calculate percentile value"""
-        sorted_data = sorted(data)
-        index = int(percentile / 100 * len(sorted_data))
-        return sorted_data[min(index, len(sorted_data) - 1)]
+**1. Collection Runner Load Testing:**
+```
+Setup Steps:
+1. Create a Collection with API requests to test
+2. Set up Environment variables for different servers
+3. Use Collection Runner with these settings:
+   - Iterations: 100 (number of test cycles)
+   - Delay: 50ms between requests (simulates user think time)
+   - Data File: CSV with test data variations
 
-# Usage Example
-def test_api_performance():
-    tester = APIPerformanceTester("https://api.example.com")
-    
-    # Load test
-    results = tester.load_test("/api/users", num_requests=1000, concurrent_users=50)
-    
-    # Performance assertions
-    assert results['success_rate'] >= 95, f"Success rate too low: {results['success_rate']}%"
-    assert results['avg_response_time'] < 2.0, f"Average response time too high: {results['avg_response_time']}s"
-    assert results['p95_response_time'] < 5.0, f"95th percentile too high: {results['p95_response_time']}s"
-    
-    print(f"Test Results: {results}")
+Manual Monitoring:
+- Watch response times in Collection Runner results
+- Note any requests taking >500ms
+- Document any failed requests (status != 200)
+- Calculate average response time manually
+- Record peak memory/CPU usage during test
 ```
 
-**Stress Testing Example:**
-```python
-def test_stress_testing():
-    tester = APIPerformanceTester("https://api.example.com")
-    
-    # Gradually increase load to find breaking point
-    user_loads = [10, 25, 50, 100, 200, 500]
-    
-    for num_users in user_loads:
-        print(f"Testing with {num_users} concurrent users...")
-        
-        results = tester.load_test("/api/users", num_requests=500, concurrent_users=num_users)
-        
-        print(f"Users: {num_users}, Success Rate: {results['success_rate']:.1f}%, "
-              f"Avg Response Time: {results['avg_response_time']:.2f}s")
-        
-        # If success rate drops below 90% or response time > 10s, we found the limit
-        if results['success_rate'] < 90 or results['avg_response_time'] > 10:
-            print(f"Breaking point found at {num_users} concurrent users")
-            break
+**2. Browser Performance Testing:**
+```
+Manual Browser Console Performance Test:
+1. Open Browser Developer Tools (F12)
+2. Go to Network tab
+3. Execute API calls through application UI
+4. Monitor timing data for each request
+5. Look for patterns in response times
+6. Document bottlenecks or slow endpoints
+
+Performance Metrics to Track:
+✅ First Response Time (time to first byte)
+✅ Total Request Duration
+✅ Number of Simultaneous Connections
+✅ Failed Request Count
+✅ Error Rate Percentage
+```
+
+**3. Manual Load Testing Strategy:**
+```
+Gradual Load Increase Process:
+1. Start with 1 user (baseline performance)
+2. Increase to 5 concurrent users (Postman Collection Runner)
+3. Increase to 10 concurrent users (multiple browser tabs)
+4. Continue increasing until performance degrades
+5. Document the breaking point
+
+Manual Observation Points:
+- Response time increases significantly (>2x baseline)
+- Error rates start appearing (>5%)
+- Server becomes unresponsive
+- Browser tabs start timing out
+```
+
+### Manual Stress Testing
+
+**Step-by-Step Manual Stress Test:**
+```
+1. Baseline Test:
+   - Single request to GET /api/users
+   - Record: Response time, status code, payload size
+   - Typical good response: <200ms, 200 OK
+
+2. Light Load Test (5 concurrent):
+   - Open 5 browser tabs
+   - Execute same request simultaneously
+   - Compare response times to baseline
+   - Document any increases
+
+3. Medium Load Test (10-20 concurrent):
+   - Use Postman Collection Runner
+   - Set iterations to 50, delay to 0ms
+   - Monitor for failed requests
+   - Note response time distribution
+
+4. Heavy Load Test (50+ concurrent):
+   - Coordinate multiple testers
+   - Each runs Collection Runner simultaneously
+   - Document system breaking point
+   - Record error messages and types
+```
+
+### Manual Performance Testing Tools
+
+**Postman Collection Runner:**
+- **Purpose:** Simulate multiple API calls
+- **Manual Setup:** Configure iterations and data files
+- **Monitoring:** Visual graphs show response times
+- **Benefits:** No coding required, easy to repeat tests
+
+**Browser Developer Tools:**
+- **Network Tab:** Shows detailed timing for each request
+- **Performance Tab:** CPU and memory usage during API calls
+- **Console:** Can execute custom JavaScript for testing
+- **Throttling:** Simulate slow network conditions
+
+**Manual Testing Checklist:**
+```
+Performance Test Plan:
+✅ Identify critical API endpoints
+✅ Define acceptable response times (<500ms)
+✅ Plan test scenarios (normal, peak, stress)
+✅ Prepare test data sets
+✅ Set up monitoring approach
+✅ Define success/failure criteria
+
+During Testing:
+✅ Monitor response times continuously
+✅ Watch for error patterns
+✅ Note system resource usage
+✅ Document user experience impact
+✅ Record breaking points
+
+Post-Testing:
+✅ Analyze results and trends
+✅ Compare against performance requirements
+✅ Document recommendations
+✅ Plan retesting after improvements
 ```
 
 ### Using Locust for Advanced Load Testing
@@ -6653,255 +6685,189 @@ def test_load_balancing():
     assert (max_requests - min_requests) < len(server_responses) * 0.2
 ```
 
-### CI/CD Integration for API Testing
+### Manual API Testing Integration in Development Workflow
 
-**Jenkins Pipeline Example:**
-```groovy
-pipeline {
-    agent any
-    
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-        
-        stage('Install Dependencies') {
-            steps {
-                sh 'pip install -r requirements.txt'
-            }
-        }
-        
-        stage('API Tests - Smoke') {
-            steps {
-                sh 'pytest tests/api/smoke/ -v --junitxml=reports/smoke-results.xml'
-            }
-            post {
-                always {
-                    junit 'reports/smoke-results.xml'
-                }
-            }
-        }
-        
-        stage('API Tests - Full Suite') {
-            when {
-                anyOf {
-                    branch 'main'
-                    branch 'develop'
-                }
-            }
-            steps {
-                sh '''
-                    pytest tests/api/ -v \
-                        --junitxml=reports/api-results.xml \
-                        --html=reports/api-report.html \
-                        --cov=api \
-                        --cov-report=html:reports/coverage
-                '''
-            }
-            post {
-                always {
-                    junit 'reports/api-results.xml'
-                    publishHTML([
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: false,
-                        keepAll: true,
-                        reportDir: 'reports',
-                        reportFiles: 'api-report.html',
-                        reportName: 'API Test Report'
-                    ])
-                }
-            }
-        }
-        
-        stage('Performance Tests') {
-            when {
-                branch 'main'
-            }
-            steps {
-                sh '''
-                    locust -f performance/locustfile.py \
-                        --host=$API_BASE_URL \
-                        --users 50 \
-                        --spawn-rate 5 \
-                        --run-time 300s \
-                        --headless \
-                        --html reports/performance-report.html
-                '''
-            }
-        }
-    }
-    
-    post {
-        failure {
-            emailext (
-                subject: "API Tests Failed - ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
-                body: "API tests failed. Check the build at ${env.BUILD_URL}",
-                to: "${env.CHANGE_AUTHOR_EMAIL}"
-            )
-        }
-    }
-}
+**Manual Testing Process Integration:**
+
+**1. Development Phase Integration:**
+```
+Manual Testing Workflow:
+1. Developer completes API feature
+2. Manual tester reviews API documentation
+3. Create manual test cases in Postman
+4. Execute test scenarios manually
+5. Document results and report issues
+6. Re-test fixes before code merge
 ```
 
-**GitHub Actions Example:**
-```yaml
-name: API Tests
-
-on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
-
-jobs:
-  api-tests:
-    runs-on: ubuntu-latest
-    
-    strategy:
-      matrix:
-        python-version: [3.8, 3.9, '3.10']
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    
-    - name: Run API Tests
-      env:
-        API_BASE_URL: ${{ secrets.API_BASE_URL }}
-        API_TOKEN: ${{ secrets.API_TOKEN }}
-      run: |
-        pytest tests/api/ -v \
-          --junitxml=junit/test-results.xml \
-          --cov=api \
-          --cov-report=xml
-    
-    - name: Upload test results
-      uses: actions/upload-artifact@v3
-      if: always()
-      with:
-        name: test-results-${{ matrix.python-version }}
-        path: junit/test-results.xml
-    
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
-        
-  performance-tests:
-    runs-on: ubuntu-latest
-    needs: api-tests
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Run Performance Tests
-      run: |
-        docker run --rm -v $PWD:/mnt/locust -p 8089:8089 \
-          locustio/locust -f /mnt/locust/performance/locustfile.py \
-          --host=${{ secrets.API_BASE_URL }} \
-          --users 100 --spawn-rate 10 --run-time 300s --headless
+**2. Manual Testing Documentation:**
+```
+Test Documentation Template:
+- Feature: [API Feature Name]
+- Endpoints: [List of endpoints]
+- Test Scenarios: [Manual test cases]
+- Test Data: [Required test data sets]
+- Expected Results: [Success criteria]
+- Actual Results: [Test execution results]
+- Issues Found: [Bug reports with screenshots]
+- Status: [Pass/Fail/Blocked]
 ```
 
-### API Testing with Docker
+**3. Manual Test Execution Tracking:**
+```
+Manual Testing Checklist:
+✅ Smoke Tests (Critical path verification)
+   - Login/Authentication works
+   - Core CRUD operations functional
+   - Basic error handling
 
-**Dockerized Test Environment:**
-```dockerfile
-# Dockerfile for API tests
-FROM python:3.9-slim
+✅ Functional Tests (Feature verification)
+   - All documented scenarios tested
+   - Edge cases explored
+   - Data validation confirmed
 
-WORKDIR /app
+✅ Integration Tests (Cross-system verification)
+   - External API dependencies tested
+   - Database operations verified
+   - End-to-end workflows confirmed
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-COPY tests/ ./tests/
-COPY config/ ./config/
-
-# Set environment variables
-ENV PYTHONPATH=/app
-ENV TEST_ENV=docker
-
-# Run tests
-CMD ["pytest", "tests/", "-v", "--junitxml=reports/results.xml"]
+✅ Security Tests (Manual security checks)
+   - Authentication bypass attempts
+   - Input validation testing
+   - Error message verification
 ```
 
-**Docker Compose for Testing:**
-```yaml
-# docker-compose.test.yml
-version: '3.8'
+**4. Manual Testing Environments:**
+```
+Environment Setup:
+- Development: http://dev-api.example.com
+- Staging: https://staging-api.example.com
+- Production: https://api.example.com
 
-services:
-  api-under-test:
-    image: myapp:latest
-    ports:
-      - "8000:8000"
-    environment:
-      - DATABASE_URL=postgresql://test:test@postgres:5432/testdb
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      - postgres
-      - redis
-  
-  postgres:
-    image: postgres:13
-    environment:
-      POSTGRES_DB: testdb
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: test
-    ports:
-      - "5432:5432"
-  
-  redis:
-    image: redis:6-alpine
-    ports:
-      - "6379:6379"
-  
-  api-tests:
-    build:
-      context: .
-      dockerfile: Dockerfile.test
-    environment:
-      - API_BASE_URL=http://api-under-test:8000
-      - TEST_ENV=docker
-    depends_on:
-      - api-under-test
-    volumes:
-      - ./reports:/app/reports
-    command: >
-      sh -c "
-        # Wait for API to be ready
-        while ! curl -f http://api-under-test:8000/health; do
-          echo 'Waiting for API...'
-          sleep 2
-        done
-        
-        # Run tests
-        pytest tests/ -v --junitxml=reports/results.xml
-      "
+Manual Environment Testing:
+1. Verify each environment accessibility
+2. Test configuration differences
+3. Validate data consistency
+4. Check environment-specific features
+5. Document environment-specific issues
 ```
 
-**Running Tests with Docker:**
-```bash
-# Build and run tests
-docker-compose -f docker-compose.test.yml up --build --abort-on-container-exit
+**5. Manual Test Result Reporting:**
+```
+Manual Test Report Template:
+================================
+API Testing Report
+Date: [Test Date]
+Tester: [Tester Name]
+Environment: [Test Environment]
+Build Version: [Version Number]
 
-# Run specific test suite
-docker-compose -f docker-compose.test.yml run api-tests pytest tests/smoke/ -v
+Test Summary:
+- Total Test Cases: X
+- Passed: X
+- Failed: X
+- Blocked: X
+- Not Executed: X
 
-# Clean up
-docker-compose -f docker-compose.test.yml down -v
+Critical Issues:
+1. [Issue description with severity]
+2. [Issue description with severity]
+
+Recommendations:
+- [Testing recommendations]
+- [Environment improvements]
+- [Process suggestions]
+================================
+```
+
+### Manual API Testing Environment Setup
+
+**Manual Environment Configuration:**
+
+**1. Local Testing Environment Setup:**
+```
+Local Development Testing:
+1. Install Postman for API testing
+2. Configure environment variables:
+   - base_url: http://localhost:3000
+   - auth_token: [development token]
+   - timeout: 30000ms
+
+3. Set up test data:
+   - Create test user accounts
+   - Prepare sample data sets
+   - Document test credentials
+
+4. Manual Testing Checklist:
+   ✅ API server is running locally
+   ✅ Database is accessible and populated
+   ✅ Authentication service is working
+   ✅ All dependencies are available
+```
+
+**2. Remote Environment Testing:**
+```
+Staging Environment Testing:
+1. Configure Postman environments:
+   - staging_url: https://staging-api.example.com
+   - staging_auth: [staging authentication]
+   - staging_timeout: 10000ms
+
+2. Environment-Specific Testing:
+   ✅ SSL certificates are valid
+   ✅ CORS settings work correctly
+   ✅ Rate limiting is configured
+   ✅ Error handling works properly
+
+3. Cross-Environment Consistency:
+   ✅ Same endpoints available
+   ✅ Same response formats
+   ✅ Compatible authentication
+   ✅ Consistent error messages
+```
+
+**3. Manual Testing Data Management:**
+```
+Test Data Strategy:
+1. Preparation Phase:
+   - Create dedicated test accounts
+   - Prepare clean datasets
+   - Document test data relationships
+   - Set up test scenario data
+
+2. Execution Phase:
+   - Use consistent test data
+   - Track data changes during testing
+   - Document any data dependencies
+   - Clean up after test execution
+
+3. Data Cleanup Process:
+   - Remove test data after execution
+   - Reset database to clean state
+   - Verify no test data leakage
+   - Document cleanup procedures
+```
+
+**4. Manual Environment Validation:**
+```
+Environment Health Check:
+1. Connectivity Tests:
+   - GET /health endpoint
+   - Verify response time <2 seconds
+   - Check status code = 200
+   - Validate response format
+
+2. Authentication Tests:
+   - Test valid credentials
+   - Test invalid credentials  
+   - Verify token expiration
+   - Check permission levels
+
+3. Performance Baseline:
+   - Measure response times
+   - Test concurrent connections
+   - Monitor error rates
+   - Document baseline metrics
 ```
 
 ### API Monitoring and Observability
