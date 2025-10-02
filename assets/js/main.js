@@ -10,6 +10,7 @@ $(document).ready(function() {
     const TOPICS = [
         { id: 'getting-started', title: 'Getting Started with SDET' },
         { id: 'manual-concepts', title: 'Manual Concepts' },
+        { id: 'web-mobile-manual-testing', title: 'Web & Mobile Manual Testing' },
         { id: 'agile-methodology', title: 'Agile Methodology' },
         { id: 'ci-cd-pipelines', title: 'CI/CD Pipelines for Testing' },
         { id: 'api-testing', title: 'API Testing Fundamentals' },
@@ -397,7 +398,8 @@ $(document).ready(function() {
     function checkFileExists(topicId) {
         const availableFiles = [
             'getting-started', 'test-automation-frameworks', 'ci-cd-pipelines',
-            'agile-methodology', 'manual-concepts', 'api-testing', 'coding-interview-practice'
+            'agile-methodology', 'manual-concepts', 'api-testing', 'coding-interview-practice',
+            'web-mobile-manual-testing' // added new topic file id
         ];
         return availableFiles.includes(topicId);
     }
