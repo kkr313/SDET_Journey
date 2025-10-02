@@ -4,22 +4,57 @@
  */
 
 $(document).ready(function() {
-    // ===== CONFIGURATION & DATA =====
-    
-    // Single source of truth for topics - eliminates duplication
-    const TOPICS = [
-        { id: 'getting-started', title: 'Getting Started with SDET' },
-        { id: 'manual-concepts', title: 'Manual Concepts' },
-        { id: 'web-mobile-manual-testing', title: 'Web & Mobile Manual Testing' },
-        { id: 'agile-methodology', title: 'Agile Methodology' },
-        { id: 'ci-cd-pipelines', title: 'CI/CD Pipelines for Testing' },
-        { id: 'api-testing', title: 'API Testing Fundamentals' },
-        { id: 'coding-interview-practice', title: 'Coding Interview & Practice' },
-        { id: 'test-automation-frameworks', title: 'Test Automation Frameworks' }
+    // ===== CONFIGURATION & DATA =====    // Grouped topics structure for better organization
+    const TOPIC_GROUPS = [
+        {
+            id: 'fundamentals',
+            title: 'SDET Fundamentals',
+            icon: 'fas fa-graduation-cap',
+            topics: [
+                { id: 'getting-started', title: 'Getting Started with SDET' },
+                { id: 'manual-concepts', title: 'Manual Concepts' },
+                { id: 'web-mobile-manual-testing', title: 'Web & Mobile Manual Testing' }
+            ]
+        },
+        {
+            id: 'automation',
+            title: 'Test Automation',
+            icon: 'fas fa-robot',
+            topics: [
+                { id: 'test-automation-frameworks', title: 'Test Automation Frameworks' },
+                { id: 'api-testing', title: 'API Testing Fundamentals' }
+            ]
+        },        {
+            id: 'coding',
+            title: 'DSA & Coding',
+            icon: 'fas fa-code',
+            topics: [
+                { id: 'programming-fundamentals', title: 'Programming Fundamentals' },
+                { id: 'data-structures-algorithms', title: 'Data Structures & Algorithms' },
+                { id: 'python-programming', title: 'Python Programming' },
+                { id: 'javascript-programming', title: 'JavaScript Programming' },
+                { id: 'coding-patterns', title: 'Coding Patterns & Techniques' },
+                { id: 'leetcode-practice', title: 'LeetCode Practice Problems' },
+                { id: 'coding-interview-practice', title: 'Coding Interview & Practice' }
+            ]
+        },
+        {
+            id: 'processes',
+            title: 'Processes & Tools',
+            icon: 'fas fa-cogs',
+            topics: [
+                { id: 'agile-methodology', title: 'Agile Methodology' },
+                { id: 'ci-cd-pipelines', title: 'CI/CD Pipelines for Testing' }
+            ]
+        }
     ];
     
-    // Global state
+    // Flattened topics array for backward compatibility
+    const TOPICS = TOPIC_GROUPS.flatMap(group => group.topics);
+      // Global state
     let currentTopicIndex = 0;
+    let searchIndex = {}; // For global search functionality
+    let isSearchMode = false;
     
     // ===== INITIALIZATION =====
     
@@ -82,14 +117,16 @@ $(document).ready(function() {
         // Set current year in footer
         document.getElementById('current-year').textContent = new Date().getFullYear();
     }
-    
-    /**
+      /**
      * Load initial content
      */
     function loadInitialContent() {
         if (TOPICS.length > 0) {
             loadMarkdownContent(TOPICS[0].id);
         }
+        
+        // Build search index after a short delay to ensure DOM is ready
+        setTimeout(buildSearchIndex, 1000);
     }
     
     // ===== UI UTILITIES =====
@@ -134,27 +171,101 @@ $(document).ready(function() {
     }
     
     // ===== TOPIC MANAGEMENT =====
-    
-    /**
-     * Load topics into the sidebar
+      /**
+     * Load topics into the sidebar with grouped structure
      */
     function loadTopics() {
         const $topicsList = $('#topics-list');
         $topicsList.empty();
 
-        TOPICS.forEach(topic => {
-            const $topicItem = $(`<li class="topic-item" data-id="${topic.id}"><span class="topic-title">${topic.title}</span></li>`);
-            $topicsList.append($topicItem);
+        TOPIC_GROUPS.forEach(group => {
+            // Create group header
+            const $groupHeader = $(`
+                <li class="topic-group-header" data-group="${group.id}">
+                    <i class="${group.icon}"></i>
+                    <span class="group-title">${group.title}</span>
+                    <i class="fas fa-chevron-down group-toggle"></i>
+                </li>
+            `);
+            $topicsList.append($groupHeader);
+
+            // Create group container
+            const $groupContainer = $(`<li class="topic-group-container" data-group="${group.id}"></li>`);
+            const $groupList = $('<ul class="topic-group-list"></ul>');
+
+            // Add topics to group
+            group.topics.forEach(topic => {
+                const $topicItem = $(`
+                    <li class="topic-item" data-id="${topic.id}">
+                        <span class="topic-title">${topic.title}</span>
+                    </li>
+                `);
+                $groupList.append($topicItem);
+            });
+
+            $groupContainer.append($groupList);
+            $topicsList.append($groupContainer);
         });
 
+        // Set first topic as active
         if (TOPICS.length > 0) {
             $topicsList.find('li.topic-item:first-child').addClass('active');
         }
-    }
-    
-    /**
-     * Update topic navigation buttons
+
+        // Setup group toggle functionality
+        setupGroupToggle();
+    }    /**
+     * Setup group toggle functionality (accordion style - one open at a time)
      */
+    function setupGroupToggle() {
+        $('.topic-group-header').on('click', function() {
+            const groupId = $(this).data('group');
+            const $container = $(`.topic-group-container[data-group="${groupId}"]`);
+            const $toggle = $(this).find('.group-toggle');
+            const isCurrentlyCollapsed = $container.hasClass('collapsed');
+            
+            // Close all other groups first
+            $('.topic-group-container').not($container).addClass('collapsed');
+            $('.topic-group-header .group-toggle').not($toggle)
+                .removeClass('fa-chevron-down').addClass('fa-chevron-right');
+            
+            // Toggle current group
+            if (isCurrentlyCollapsed) {
+                $container.removeClass('collapsed');
+                $toggle.removeClass('fa-chevron-right').addClass('fa-chevron-down');
+            } else {
+                $container.addClass('collapsed');
+                $toggle.removeClass('fa-chevron-down').addClass('fa-chevron-right');
+            }
+            
+            // Save group states (only one open at a time)
+            const groupStates = {};
+            TOPIC_GROUPS.forEach(group => {
+                const $groupContainer = $(`.topic-group-container[data-group="${group.id}"]`);
+                groupStates[group.id] = $groupContainer.hasClass('collapsed');
+            });
+            localStorage.setItem('groupStates', JSON.stringify(groupStates));
+        });
+        
+        // Restore group states - ensure only one is open
+        const groupStates = JSON.parse(localStorage.getItem('groupStates') || '{}');
+        let hasOpenGroup = false;
+        
+        // First, collapse all groups
+        $('.topic-group-container').addClass('collapsed');
+        $('.topic-group-header .group-toggle')
+            .removeClass('fa-chevron-down').addClass('fa-chevron-right');
+        
+        // Then open only the first non-collapsed group (or first group by default)
+        TOPIC_GROUPS.forEach((group, index) => {
+            if (!hasOpenGroup && (!groupStates[group.id] || index === 0)) {
+                $(`.topic-group-container[data-group="${group.id}"]`).removeClass('collapsed');
+                $(`.topic-group-header[data-group="${group.id}"] .group-toggle`)
+                    .removeClass('fa-chevron-right').addClass('fa-chevron-down');
+                hasOpenGroup = true;
+            }
+        });
+    }
     function updateTopicNav() {
         const prevBtn = document.getElementById('prev-topic');
         const nextBtn = document.getElementById('next-topic');
@@ -193,16 +304,57 @@ $(document).ready(function() {
         const content = document.getElementById('markdown-content');
         if (content) content.scrollTop = 0;
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-    }
-    
-    /**
-     * Update active state in sidebar
+    }    /**
+     * Update active state in sidebar (maintains accordion behavior)
      */
     function updateSidebarActive() {
-        const links = document.querySelectorAll('#topics-list li');
-        links.forEach((link, idx) => {
-            link.classList.toggle('active', idx === currentTopicIndex);
+        const activeTopicId = TOPICS[currentTopicIndex]?.id;
+        let activeGroupId = null;
+        
+        // Remove active class from all topic items and find the active group
+        document.querySelectorAll('#topics-list .topic-item').forEach(item => {
+            item.classList.remove('active');
+            
+            if (item.dataset.id === activeTopicId) {
+                item.classList.add('active');
+                const groupContainer = item.closest('.topic-group-container');
+                if (groupContainer) {
+                    activeGroupId = groupContainer.dataset.group;
+                }
+            }
         });
+        
+        if (activeGroupId) {
+            // First, close ALL groups (accordion behavior)
+            document.querySelectorAll('.topic-group-container').forEach(container => {
+                container.classList.add('collapsed');
+            });
+            
+            document.querySelectorAll('.topic-group-header .group-toggle').forEach(toggle => {
+                toggle.classList.remove('fa-chevron-down');
+                toggle.classList.add('fa-chevron-right');
+            });
+            
+            // Then open ONLY the group containing the active topic
+            const activeGroupContainer = document.querySelector(`.topic-group-container[data-group="${activeGroupId}"]`);
+            const activeGroupToggle = document.querySelector(`.topic-group-header[data-group="${activeGroupId}"] .group-toggle`);
+            
+            if (activeGroupContainer) {
+                activeGroupContainer.classList.remove('collapsed');
+            }
+            
+            if (activeGroupToggle) {
+                activeGroupToggle.classList.remove('fa-chevron-right');
+                activeGroupToggle.classList.add('fa-chevron-down');
+            }
+            
+            // Update localStorage to reflect only one group is open
+            const groupStates = {};
+            TOPIC_GROUPS.forEach(group => {
+                groupStates[group.id] = group.id !== activeGroupId; // true = collapsed, false = open
+            });
+            localStorage.setItem('groupStates', JSON.stringify(groupStates));
+        }
     }
     
     // ===== EVENT LISTENERS SETUP =====
@@ -217,24 +369,27 @@ $(document).ready(function() {
         setupThemeAndFont();
         setupPDFDownload();
     }
-    
-    /**
+      /**
      * Setup topic navigation event listeners
      */
     function setupTopicNavigation() {
-        // Topic selection
-        $('#topics-list').on('click', 'li.topic-item', function() {
+        // Topic selection (using event delegation for grouped structure)
+        $('#topics-list').on('click', '.topic-item', function() {
             const topicId = $(this).data('id');
             const idx = TOPICS.findIndex(t => t.id === topicId);
             if (idx !== -1) {
                 currentTopicIndex = idx;
                 updateTopicNav();
+                updateSidebarActive();
+                loadMarkdownContent(topicId);
+                $('#content').scrollTop(0);
+                window.scrollTo(0, 0);
+                
+                // Close mobile sidebar
+                if (window.innerWidth <= 768) {
+                    $('#sidebar').removeClass('active');
+                }
             }
-            $('#topics-list li').removeClass('active');
-            $(this).addClass('active');
-            loadMarkdownContent(topicId);
-            $('#content').scrollTop(0);
-            window.scrollTo(0, 0);
         });
         
         // Navigation buttons
@@ -275,18 +430,61 @@ $(document).ready(function() {
                 }
             }
         });
-    }
-    
-    /**
-     * Setup search functionality
+    }    /**
+     * Setup search functionality with global content search
      */
     function setupSearch() {
-        $('#search-input').on('input', function() {
-            const searchTerm = $(this).val().toLowerCase();
-            $('.topic-item').each(function() {
-                const $item = $(this);
-                $item.toggle($item.text().toLowerCase().includes(searchTerm));
-            });
+        const $searchInput = $('#search-input');
+        const $searchResults = $('#search-results');
+        const $clearSearch = $('#clear-search');
+        
+        // Enhanced search with debouncing
+        let searchTimeout;
+        $searchInput.on('input', function() {
+            clearTimeout(searchTimeout);
+            const searchTerm = $(this).val().toLowerCase().trim();
+            
+            if (searchTerm.length === 0) {
+                showTopicsList();
+                $clearSearch.hide();
+                return;
+            }
+            
+            $clearSearch.show();
+            
+            searchTimeout = setTimeout(() => {
+                performGlobalSearch(searchTerm);
+            }, 300);
+        });
+        
+        // Clear search functionality
+        $clearSearch.on('click', function() {
+            $searchInput.val('');
+            showTopicsList();
+            $(this).hide();
+        });
+        
+        // Handle search result clicks
+        $searchResults.on('click', '.search-result-item', function() {
+            const topicId = $(this).data('topic-id');
+            const sectionId = $(this).data('section-id');
+            
+            // Load the topic
+            const idx = TOPICS.findIndex(t => t.id === topicId);
+            if (idx !== -1) {
+                currentTopicIndex = idx;
+                loadMarkdownContent(topicId, sectionId);
+                updateTopicNav();
+                updateSidebarActive();
+                showTopicsList(); // Return to topics view
+                $searchInput.val(''); // Clear search
+                $clearSearch.hide();
+                
+                // Close mobile sidebar
+                if (window.innerWidth <= 768) {
+                    $('#sidebar').removeClass('active');
+                }
+            }
         });
     }
     
@@ -346,12 +544,269 @@ $(document).ready(function() {
         });
     }
     
-    // ===== CONTENT LOADING =====
+    // ===== GLOBAL SEARCH FUNCTIONALITY =====
+      /**
+     * Build search index for all content
+     */
+    async function buildSearchIndex() {
+        searchIndex = {};
+        
+        const promises = TOPICS.map(topic => {
+            if (checkFileExists(topic.id)) {
+                return $.ajax({
+                    url: `assets/data/${topic.id}.md`,
+                    dataType: 'text'
+                }).then(markdown => {
+                    indexTopicContent(topic, markdown);
+                }).catch(error => {
+                    console.warn(`Failed to index ${topic.id}:`, error);
+                });
+            }
+            return Promise.resolve();
+        });
+        
+        try {
+            await Promise.all(promises);
+            console.log('Search index built successfully with', Object.keys(searchIndex).length, 'sections');
+        } catch (error) {
+            console.error('Error building search index:', error);
+        }
+    }
     
     /**
+     * Index content for a specific topic
+     */
+    function indexTopicContent(topic, markdown) {
+        const lines = markdown.split('\n');
+        let currentSection = '';
+        let sectionContent = '';
+        let sectionIndex = 0;
+        
+        lines.forEach((line, index) => {
+            // Detect section headers
+            if (line.startsWith('#')) {
+                // Save previous section
+                if (currentSection && sectionContent.trim()) {
+                    addToSearchIndex(topic, currentSection, sectionContent, sectionIndex);
+                }
+                
+                // Start new section
+                currentSection = line.replace(/^#+\s*/, '');
+                sectionContent = line + '\n';
+                sectionIndex++;
+            } else {
+                sectionContent += line + '\n';
+            }
+        });
+        
+        // Save final section
+        if (currentSection && sectionContent.trim()) {
+            addToSearchIndex(topic, currentSection, sectionContent, sectionIndex);
+        }
+    }
+    
+    /**
+     * Add content to search index
+     */
+    function addToSearchIndex(topic, sectionTitle, content, sectionIndex) {
+        const searchKey = `${topic.id}-${sectionIndex}`;
+        
+        searchIndex[searchKey] = {
+            topicId: topic.id,
+            topicTitle: topic.title,
+            sectionTitle: sectionTitle,
+            content: content.toLowerCase(),
+            originalContent: content,
+            sectionIndex: sectionIndex
+        };
+    }
+    
+    /**
+     * Perform global search across all content
+     */
+    function performGlobalSearch(searchTerm) {
+        const results = [];
+        const searchWords = searchTerm.split(' ').filter(word => word.length > 0);
+        
+        Object.values(searchIndex).forEach(item => {
+            let relevanceScore = 0;
+            let matchedSnippets = [];
+            
+            searchWords.forEach(word => {
+                // Check title matches (higher weight)
+                if (item.sectionTitle.toLowerCase().includes(word)) {
+                    relevanceScore += 10;
+                    matchedSnippets.push({
+                        type: 'title',
+                        text: item.sectionTitle,
+                        highlight: word
+                    });
+                }
+                
+                if (item.topicTitle.toLowerCase().includes(word)) {
+                    relevanceScore += 8;
+                }
+                
+                // Check content matches
+                const contentIndex = item.content.indexOf(word);
+                if (contentIndex !== -1) {
+                    relevanceScore += 1;
+                    
+                    // Extract snippet around the match
+                    const snippet = extractSnippet(item.originalContent, word, contentIndex);
+                    if (snippet) {
+                        matchedSnippets.push({
+                            type: 'content',
+                            text: snippet,
+                            highlight: word
+                        });
+                    }
+                }
+            });
+            
+            if (relevanceScore > 0) {
+                results.push({
+                    ...item,
+                    relevanceScore,
+                    matchedSnippets: matchedSnippets.slice(0, 2) // Limit snippets
+                });
+            }
+        });
+        
+        // Sort by relevance
+        results.sort((a, b) => b.relevanceScore - a.relevanceScore);
+        
+        displaySearchResults(results.slice(0, 10), searchTerm); // Limit to top 10 results
+    }
+    
+    /**
+     * Extract snippet around search match
+     */
+    function extractSnippet(content, searchWord, matchIndex) {
+        const snippetLength = 150;
+        const start = Math.max(0, matchIndex - snippetLength / 2);
+        const end = Math.min(content.length, start + snippetLength);
+        
+        let snippet = content.substring(start, end);
+        
+        // Clean up markdown and formatting
+        snippet = snippet.replace(/[#*`_]/g, '');
+        snippet = snippet.replace(/\n+/g, ' ');
+        snippet = snippet.trim();
+        
+        // Add ellipsis if truncated
+        if (start > 0) snippet = '...' + snippet;
+        if (end < content.length) snippet = snippet + '...';
+        
+        return snippet;
+    }
+    
+    /**
+     * Display search results
+     */
+    function displaySearchResults(results, searchTerm) {
+        const $searchResults = $('#search-results');
+        $searchResults.empty();
+        
+        if (results.length === 0) {
+            $searchResults.html(`
+                <div class="no-results">
+                    <i class="fas fa-search"></i>
+                    <p>No results found for "${searchTerm}"</p>
+                    <small>Try different keywords or check spelling</small>
+                </div>
+            `);
+        } else {
+            $searchResults.append(`
+                <div class="search-header">
+                    <span class="search-count">${results.length} result${results.length !== 1 ? 's' : ''} for "${searchTerm}"</span>
+                </div>
+            `);
+            
+            results.forEach(result => {
+                const $resultItem = createSearchResultItem(result, searchTerm);
+                $searchResults.append($resultItem);
+            });
+        }
+        
+        showSearchResults();
+    }
+    
+    /**
+     * Create search result item HTML
+     */
+    function createSearchResultItem(result, searchTerm) {
+        const topicGroup = TOPIC_GROUPS.find(group => 
+            group.topics.some(topic => topic.id === result.topicId)
+        );
+        
+        let snippetHTML = '';
+        if (result.matchedSnippets.length > 0) {
+            snippetHTML = result.matchedSnippets.map(snippet => {
+                const highlightedText = highlightSearchTerms(snippet.text, searchTerm);
+                return `<div class="search-snippet ${snippet.type}">${highlightedText}</div>`;
+            }).join('');
+        }
+        
+        return $(`
+            <div class="search-result-item" data-topic-id="${result.topicId}" data-section-id="${result.sectionIndex}">
+                <div class="result-header">
+                    <div class="result-topic">
+                        <i class="${topicGroup ? topicGroup.icon : 'fas fa-file-alt'}"></i>
+                        <span class="topic-name">${result.topicTitle}</span>
+                    </div>
+                    <div class="result-section">${result.sectionTitle}</div>
+                </div>
+                <div class="result-snippets">${snippetHTML}</div>
+            </div>
+        `);
+    }
+    
+    /**
+     * Highlight search terms in text
+     */
+    function highlightSearchTerms(text, searchTerm) {
+        const searchWords = searchTerm.split(' ').filter(word => word.length > 0);
+        let highlightedText = text;
+        
+        searchWords.forEach(word => {
+            const regex = new RegExp(`(${escapeRegExp(word)})`, 'gi');
+            highlightedText = highlightedText.replace(regex, '<mark>$1</mark>');
+        });
+        
+        return highlightedText;
+    }
+    
+    /**
+     * Escape special regex characters
+     */
+    function escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+    
+    /**
+     * Show search results and hide topics list
+     */
+    function showSearchResults() {
+        $('#topics-list').hide();
+        $('#search-results').show();
+        isSearchMode = true;
+    }
+    
+    /**
+     * Show topics list and hide search results
+     */
+    function showTopicsList() {
+        $('#search-results').hide();
+        $('#topics-list').show();
+        isSearchMode = false;
+    }
+    
+    // ===== CONTENT LOADING =====
+      /**
      * Load and render markdown content
      */
-    function loadMarkdownContent(topicId) {
+    function loadMarkdownContent(topicId, sectionIndex = null) {
         const $content = $('#markdown-content');
         $content.html('<div class="loading-content"><p>Loading content...</p></div>');
         
@@ -384,12 +839,38 @@ $(document).ready(function() {
                     initializeCodingPractice();
                 }
                 
-                $content.scrollTop(0);
+                // Scroll to specific section if provided
+                if (sectionIndex !== null) {
+                    scrollToSection(sectionIndex);
+                } else {
+                    $content.scrollTop(0);
+                }
             },
             error: function(xhr, status, error) {
                 showErrorMessage($content, status, error);
             }
         });
+    }
+      /**
+     * Scroll to specific section in content
+     */
+    function scrollToSection(sectionIndex) {
+        setTimeout(() => {
+            const headers = document.querySelectorAll('#markdown-content h1, #markdown-content h2, #markdown-content h3');
+            if (headers[sectionIndex - 1]) {
+                headers[sectionIndex - 1].scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+                
+                // Highlight the section briefly
+                const header = headers[sectionIndex - 1];
+                header.style.backgroundColor = 'rgba(255, 255, 0, 0.3)';
+                setTimeout(() => {
+                    header.style.backgroundColor = '';
+                }, 2000);
+            }
+        }, 500);
     }
     
     /**
