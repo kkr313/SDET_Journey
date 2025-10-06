@@ -1427,4 +1427,117 @@ $(document).ready(function() {
         $('body').removeClass('code-practice-active');
         // No special elements to remove - using standard behavior
     }
+
+    // ===== CHATBOT FUNCTIONALITY =====
+
+    /**
+     * Setup all chatbot event listeners and initialize
+     */
+    function setupChatbot() {
+        const $toggleBtn = $('#chatbot-toggle');
+        const $window = $('#chatbot-window');
+        const $closeBtn = $('#chatbot-close');
+        const $sendBtn = $('#chatbot-send');
+        const $input = $('#chatbot-input');
+        const $messages = $('#chatbot-messages');
+
+        // Toggle chatbot window
+        $toggleBtn.on('click', function() {
+            const isActive = $window.hasClass('active');
+            $window.toggleClass('active');
+            $(this).find('.fa-comment-dots').toggle(isActive);
+            $(this).find('.fa-times').toggle(!isActive);
+
+            if ($window.hasClass('active') && $messages.children().length === 0) {
+                addMessage("Hello! I'm your AI assistant. Ask me about any topic like 'API testing', 'Git', or 'SDET roadmap'.", 'bot');
+            }
+        });
+
+        // Close chatbot window
+        $closeBtn.on('click', function() {
+            $window.removeClass('active');
+            $toggleBtn.find('.fa-comment-dots').show();
+            $toggleBtn.find('.fa-times').hide();
+        });
+
+        // Send message on button click
+        $sendBtn.on('click', handleUserInput);
+
+        // Send message on Enter key press
+        $input.on('keypress', function(e) {
+            if (e.which === 13) {
+                handleUserInput();
+            }
+        });
+
+        function handleUserInput() {
+            const userInput = $input.val().trim();
+            if (userInput) {
+                addMessage(userInput, 'user');
+                $input.val('');
+
+                // Simulate bot thinking
+                setTimeout(() => {
+                    const botResponse = getBotResponse(userInput);
+                    addMessage(botResponse, 'bot');
+                }, 500);
+            }
+        }
+
+        function addMessage(text, sender) {
+            const $message = $(`<div class="chatbot-message ${sender}"></div>`);
+            $message.html(text); // Use .html() to render links
+            $messages.append($message);
+            $messages.scrollTop($messages[0].scrollHeight);
+        }
+
+        function getBotResponse(query) {
+            const q = query.toLowerCase();
+
+            // Keyword mapping to topics
+            const keywordMap = {
+                'sdet-journey': ['sdet', 'roadmap', 'journey'],
+                'manual-concepts': ['manual', 'testing concepts', 'principles'],
+                'test-automation-frameworks': ['automation', 'framework'],
+                'api-testing': ['api', 'rest', 'postman'],
+                'agile-methodology': ['agile', 'scrum'],
+                'ci-cd-pipelines': ['ci/cd', 'pipeline', 'jenkins'],
+                'git-github-actions': ['git', 'github', 'version control'],
+                'coding-interview-practice': ['code', 'dsa', 'algorithm', 'interview']
+            };
+
+            for (const topicId in keywordMap) {
+                for (const keyword of keywordMap[topicId]) {
+                    if (q.includes(keyword)) {
+                        const topic = TOPICS.find(t => t.id === topicId);
+                        return `I found something about "${keyword}". You might want to check out the <a href="#" class="chatbot-link" data-topic-id="${topicId}">${topic.title}</a> section for more details.`;
+                    }
+                }
+            }
+
+            return "I'm sorry, I couldn't find a specific topic for that. Try asking about a key concept like 'automation', 'API', or 'Git'. You can also use the search bar for a global search.";
+        }
+
+        // Handle clicks on links within chat
+        $messages.on('click', '.chatbot-link', function(e) {
+            e.preventDefault();
+            const topicId = $(this).data('topic-id');
+            const idx = TOPICS.findIndex(t => t.id === topicId);
+            if (idx !== -1) {
+                showTopic(idx);
+                // Close the chatbot to show the content
+                $closeBtn.click();
+            }
+        });
+    }
+
+    // Add chatbot setup to the main event listener setup
+    function setupAllEventListeners() {
+        setupTopicNavigation();
+        setupMobileInterface();
+        setupSearch();
+        setupThemeAndFont();
+        setupPDFDownload();
+        setupChatbot(); // Initialize chatbot
+    }
 });
