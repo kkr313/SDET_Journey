@@ -52,7 +52,8 @@ $(document).ready(function() {
             icon: 'fas fa-cogs',
             topics: [
                 { id: 'agile-methodology', title: 'Agile Methodology' },
-                { id: 'ci-cd-pipelines', title: 'CI/CD Pipelines for Testing' }
+                { id: 'ci-cd-pipelines', title: 'CI/CD Pipelines for Testing' },
+                { id: 'git-github-actions', title: 'Git & GitHub' }
             ]
         }
     ];
@@ -888,7 +889,7 @@ $(document).ready(function() {
         const availableFiles = [
             'getting-started', 'test-automation-frameworks', 'ci-cd-pipelines',
             'agile-methodology', 'manual-concepts', 'api-testing', 'coding-interview-practice',
-            'web-mobile-manual-testing', 'sdet-journey'
+            'web-mobile-manual-testing', 'sdet-journey', 'git-github-actions'
         ];
         return availableFiles.includes(topicId);
     }
