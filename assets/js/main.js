@@ -7,6 +7,14 @@ $(document).ready(function() {
     // ===== CONFIGURATION & DATA =====    // Grouped topics structure for better organization
     const TOPIC_GROUPS = [
         {
+            id: 'sdet-journey',
+            title: 'SDET Roadmap',
+            icon: 'fas fa-rocket',
+            topics: [
+                { id: 'sdet-journey', title: 'The SDET Journey' }
+            ]
+        },
+        {
             id: 'fundamentals',
             title: 'SDET Fundamentals',
             icon: 'fas fa-graduation-cap',
@@ -880,7 +888,7 @@ $(document).ready(function() {
         const availableFiles = [
             'getting-started', 'test-automation-frameworks', 'ci-cd-pipelines',
             'agile-methodology', 'manual-concepts', 'api-testing', 'coding-interview-practice',
-            'web-mobile-manual-testing' // added new topic file id
+            'web-mobile-manual-testing', 'sdet-journey'
         ];
         return availableFiles.includes(topicId);
     }
