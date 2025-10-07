@@ -1492,39 +1492,71 @@ $(document).ready(function() {
         }
 
         function getBotResponse(query) {
-            const q = query.toLowerCase();
+            const searchTerm = query.toLowerCase().trim();
+            const searchWords = searchTerm.split(' ').filter(word => word.length > 1);
 
-            // Keyword mapping to topics
-            const keywordMap = {
-                'sdet-journey': ['sdet', 'roadmap', 'journey'],
-                'manual-concepts': ['manual', 'testing concepts', 'principles'],
-                'test-automation-frameworks': ['automation', 'framework'],
-                'api-testing': ['api', 'rest', 'postman'],
-                'agile-methodology': ['agile', 'scrum'],
-                'ci-cd-pipelines': ['ci/cd', 'pipeline', 'jenkins'],
-                'git-github-actions': ['git', 'github', 'version control'],
-                'coding-interview-practice': ['code', 'dsa', 'algorithm', 'interview']
-            };
-
-            for (const topicId in keywordMap) {
-                for (const keyword of keywordMap[topicId]) {
-                    if (q.includes(keyword)) {
-                        const topic = TOPICS.find(t => t.id === topicId);
-                        return `I found something about "${keyword}". You might want to check out the <a href="#" class="chatbot-link" data-topic-id="${topicId}">${topic.title}</a> section for more details.`;
-                    }
-                }
+            if (searchWords.length === 0) {
+                return "Please ask a more specific question, for example 'What is API testing?'.";
             }
 
-            return "I'm sorry, I couldn't find a specific topic for that. Try asking about a key concept like 'automation', 'API', or 'Git'. You can also use the search bar for a global search.";
+            const results = [];
+
+            // Perform a deep search using the pre-built searchIndex
+            Object.values(searchIndex).forEach(item => {
+                let relevanceScore = 0;
+
+                searchWords.forEach(word => {
+                    if (item.sectionTitle.toLowerCase().includes(word)) {
+                        relevanceScore += 10; // High weight for matching section titles
+                    }
+                    if (item.topicTitle.toLowerCase().includes(word)) {
+                        relevanceScore += 5; // Medium weight for matching topic titles
+                    }
+                    if (item.content.includes(word)) {
+                        // Weight based on frequency
+                        relevanceScore += (item.content.match(new RegExp(word, "g")) || []).length;
+                    }
+                });
+
+                if (relevanceScore > 0) {
+                    results.push({ ...item, relevanceScore });
+                }
+            });
+
+            if (results.length === 0) {
+                return "I'm sorry, I couldn't find anything related to that. Try rephrasing your question or use the main search bar for a global search.";
+            }
+
+            // Sort by relevance and get the best result
+            results.sort((a, b) => b.relevanceScore - a.relevanceScore);
+            const bestResult = results[0];
+
+            // Create a helpful snippet and highlight the search terms
+            const snippet = extractSnippet(bestResult.originalContent, searchWords[0], bestResult.content.indexOf(searchWords[0]));
+            const highlightedSnippet = highlightSearchTerms(snippet, searchTerm);
+
+            // Construct a more "AI-like" response
+            return `I found a section titled <strong>"${bestResult.sectionTitle}"</strong> in the <em>${bestResult.topicTitle}</em> guide that might help.
+                    <div class="search-snippet content" style="margin-top: 8px;">
+                        ${highlightedSnippet}
+                    </div>
+                    <a href="#" class="chatbot-link" data-topic-id="${bestResult.topicId}" data-section-index="${bestResult.sectionIndex}">Click here to read more.</a>`;
         }
 
-        // Handle clicks on links within chat
+        // Handle clicks on links within chat to navigate and scroll
         $messages.on('click', '.chatbot-link', function(e) {
             e.preventDefault();
             const topicId = $(this).data('topic-id');
+            const sectionIndex = $(this).data('section-index');
             const idx = TOPICS.findIndex(t => t.id === topicId);
+
             if (idx !== -1) {
-                showTopic(idx);
+                // Load the content and scroll to the specific section
+                currentTopicIndex = idx;
+                loadMarkdownContent(topicId, sectionIndex);
+                updateTopicNav();
+                updateSidebarActive();
+
                 // Close the chatbot to show the content
                 $closeBtn.click();
             }
