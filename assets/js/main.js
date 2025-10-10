@@ -7,6 +7,14 @@ $(document).ready(function() {
     // ===== CONFIGURATION & DATA =====    // Grouped topics structure for better organization
     const TOPIC_GROUPS = [
         {
+            id: 'sdet-journey',
+            title: 'SDET Roadmap',
+            icon: 'fas fa-rocket',
+            topics: [
+                { id: 'sdet-journey', title: 'The SDET Journey' }
+            ]
+        },
+        {
             id: 'fundamentals',
             title: 'SDET Fundamentals',
             icon: 'fas fa-graduation-cap',
@@ -44,7 +52,8 @@ $(document).ready(function() {
             icon: 'fas fa-cogs',
             topics: [
                 { id: 'agile-methodology', title: 'Agile Methodology' },
-                { id: 'ci-cd-pipelines', title: 'CI/CD Pipelines for Testing' }
+                { id: 'ci-cd-pipelines', title: 'CI/CD Pipelines for Testing' },
+                { id: 'git-github-actions', title: 'Git & GitHub' }
             ]
         }
     ];
@@ -880,7 +889,7 @@ $(document).ready(function() {
         const availableFiles = [
             'getting-started', 'test-automation-frameworks', 'ci-cd-pipelines',
             'agile-methodology', 'manual-concepts', 'api-testing', 'coding-interview-practice',
-            'web-mobile-manual-testing' // added new topic file id
+            'web-mobile-manual-testing', 'sdet-journey', 'git-github-actions'
         ];
         return availableFiles.includes(topicId);
     }
@@ -1417,5 +1426,150 @@ $(document).ready(function() {
     function cleanupCodingPractice() {
         $('body').removeClass('code-practice-active');
         // No special elements to remove - using standard behavior
+    }
+
+    // ===== CHATBOT FUNCTIONALITY =====
+
+    /**
+     * Setup all chatbot event listeners and initialize
+     */
+    function setupChatbot() {
+        const $toggleBtn = $('#chatbot-toggle');
+        const $window = $('#chatbot-window');
+        const $closeBtn = $('#chatbot-close');
+        const $sendBtn = $('#chatbot-send');
+        const $input = $('#chatbot-input');
+        const $messages = $('#chatbot-messages');
+
+        // Toggle chatbot window
+        $toggleBtn.on('click', function() {
+            const isActive = $window.hasClass('active');
+            $window.toggleClass('active');
+            $(this).find('.fa-comment-dots').toggle(isActive);
+            $(this).find('.fa-times').toggle(!isActive);
+
+            if ($window.hasClass('active') && $messages.children().length === 0) {
+                addMessage("Hello! I'm your AI assistant. Ask me about any topic like 'API testing', 'Git', or 'SDET roadmap'.", 'bot');
+            }
+        });
+
+        // Close chatbot window
+        $closeBtn.on('click', function() {
+            $window.removeClass('active');
+            $toggleBtn.find('.fa-comment-dots').show();
+            $toggleBtn.find('.fa-times').hide();
+        });
+
+        // Send message on button click
+        $sendBtn.on('click', handleUserInput);
+
+        // Send message on Enter key press
+        $input.on('keypress', function(e) {
+            if (e.which === 13) {
+                handleUserInput();
+            }
+        });
+
+        function handleUserInput() {
+            const userInput = $input.val().trim();
+            if (userInput) {
+                addMessage(userInput, 'user');
+                $input.val('');
+
+                // Simulate bot thinking
+                setTimeout(() => {
+                    const botResponse = getBotResponse(userInput);
+                    addMessage(botResponse, 'bot');
+                }, 500);
+            }
+        }
+
+        function addMessage(text, sender) {
+            const $message = $(`<div class="chatbot-message ${sender}"></div>`);
+            $message.html(text); // Use .html() to render links
+            $messages.append($message);
+            $messages.scrollTop($messages[0].scrollHeight);
+        }
+
+        function getBotResponse(query) {
+            const searchTerm = query.toLowerCase().trim();
+            const searchWords = searchTerm.split(' ').filter(word => word.length > 1);
+
+            if (searchWords.length === 0) {
+                return "Please ask a more specific question, for example 'What is API testing?'.";
+            }
+
+            const results = [];
+
+            // Perform a deep search using the pre-built searchIndex
+            Object.values(searchIndex).forEach(item => {
+                let relevanceScore = 0;
+
+                searchWords.forEach(word => {
+                    if (item.sectionTitle.toLowerCase().includes(word)) {
+                        relevanceScore += 10; // High weight for matching section titles
+                    }
+                    if (item.topicTitle.toLowerCase().includes(word)) {
+                        relevanceScore += 5; // Medium weight for matching topic titles
+                    }
+                    if (item.content.includes(word)) {
+                        // Weight based on frequency
+                        relevanceScore += (item.content.match(new RegExp(word, "g")) || []).length;
+                    }
+                });
+
+                if (relevanceScore > 0) {
+                    results.push({ ...item, relevanceScore });
+                }
+            });
+
+            if (results.length === 0) {
+                return "I'm sorry, I couldn't find anything related to that. Try rephrasing your question or use the main search bar for a global search.";
+            }
+
+            // Sort by relevance and get the best result
+            results.sort((a, b) => b.relevanceScore - a.relevanceScore);
+            const bestResult = results[0];
+
+            // Create a helpful snippet and highlight the search terms
+            const snippet = extractSnippet(bestResult.originalContent, searchWords[0], bestResult.content.indexOf(searchWords[0]));
+            const highlightedSnippet = highlightSearchTerms(snippet, searchTerm);
+
+            // Construct a more "AI-like" response
+            return `I found a section titled <strong>"${bestResult.sectionTitle}"</strong> in the <em>${bestResult.topicTitle}</em> guide that might help.
+                    <div class="search-snippet content" style="margin-top: 8px;">
+                        ${highlightedSnippet}
+                    </div>
+                    <a href="#" class="chatbot-link" data-topic-id="${bestResult.topicId}" data-section-index="${bestResult.sectionIndex}">Click here to read more.</a>`;
+        }
+
+        // Handle clicks on links within chat to navigate and scroll
+        $messages.on('click', '.chatbot-link', function(e) {
+            e.preventDefault();
+            const topicId = $(this).data('topic-id');
+            const sectionIndex = $(this).data('section-index');
+            const idx = TOPICS.findIndex(t => t.id === topicId);
+
+            if (idx !== -1) {
+                // Load the content and scroll to the specific section
+                currentTopicIndex = idx;
+                loadMarkdownContent(topicId, sectionIndex);
+                updateTopicNav();
+                updateSidebarActive();
+
+                // Close the chatbot to show the content
+                $closeBtn.click();
+            }
+        });
+    }
+
+    // Add chatbot setup to the main event listener setup
+    function setupAllEventListeners() {
+        setupTopicNavigation();
+        setupMobileInterface();
+        setupSearch();
+        setupThemeAndFont();
+        setupPDFDownload();
+        setupChatbot(); // Initialize chatbot
     }
 });
