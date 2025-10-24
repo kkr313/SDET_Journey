@@ -65,6 +65,39 @@ $(document).ready(function() {
     let searchIndex = {}; // For global search functionality
     let isSearchMode = false;
     
+    // ===== MARKED.JS CONFIGURATION =====
+    
+    /**
+     * Configure marked.js for proper heading ID generation
+     */
+    if (typeof marked !== 'undefined') {
+        marked.use({
+            gfm: true,
+            breaks: true,
+            headerIds: true,
+            mangle: false
+        });
+        
+        // Custom renderer to ensure proper heading IDs
+        const renderer = new marked.Renderer();
+        const originalHeading = renderer.heading.bind(renderer);
+        
+        renderer.heading = function(text, level, raw) {
+            // Generate ID from heading text
+            const id = raw
+                .toLowerCase()
+                .trim()
+                .replace(/[^\w\s-]/g, '') // Remove special characters
+                .replace(/\s+/g, '-')      // Replace spaces with hyphens
+                .replace(/-+/g, '-')       // Replace multiple hyphens with single hyphen
+                .replace(/^-+|-+$/g, '');  // Remove leading/trailing hyphens
+            
+            return `<h${level} id="${id}">${text}</h${level}>`;
+        };
+        
+        marked.use({ renderer });
+    }
+    
     // ===== INITIALIZATION =====
     
     initializeApp();
@@ -377,6 +410,7 @@ $(document).ready(function() {
         setupSearch();
         setupThemeAndFont();
         setupPDFDownload();
+        setupChatbot(); // Initialize chatbot
     }
       /**
      * Setup topic navigation event listeners
@@ -842,6 +876,11 @@ $(document).ready(function() {
                 if (typeof hljs !== 'undefined') {
                     document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
                 }
+                  // Setup internal anchor link navigation
+                setupInternalAnchorLinks();
+                
+                // Wrap tables for responsive scrolling
+                wrapTablesForResponsiveness();
                 
                 // Initialize coding practice if needed
                 if (topicId === 'coding-interview-practice') {
@@ -860,7 +899,65 @@ $(document).ready(function() {
             }
         });
     }
-      /**
+
+    /**
+     * Setup event listeners for internal anchor links (Table of Contents)
+     */
+    function setupInternalAnchorLinks() {
+        $('#markdown-content a[href^="#"]').on('click', function(e) {
+            e.preventDefault();
+            const targetId = $(this).attr('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+            
+            if (targetElement) {
+                // Scroll to the target element smoothly
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                // Highlight the section briefly
+                targetElement.style.backgroundColor = 'rgba(52, 152, 219, 0.2)';
+                setTimeout(() => {
+                    targetElement.style.transition = 'background-color 1s ease';
+                    targetElement.style.backgroundColor = '';
+                }, 2000);
+                
+                // Update URL hash without jumping
+                if (history.pushState) {
+                    history.pushState(null, null, '#' + targetId);
+                } else {
+                    location.hash = '#' + targetId;
+                }
+            }
+        });
+    }
+    
+    /**
+     * Wrap all tables in responsive containers for horizontal scrolling
+     */
+    function wrapTablesForResponsiveness() {
+        const tables = document.querySelectorAll('#markdown-content table');
+        
+        tables.forEach(table => {
+            // Check if table is already wrapped
+            if (table.parentElement.classList.contains('table-wrapper')) {
+                return;
+            }
+            
+            // Create wrapper div
+            const wrapper = document.createElement('div');
+            wrapper.className = 'table-wrapper';
+            
+            // Insert wrapper before table
+            table.parentNode.insertBefore(wrapper, table);
+            
+            // Move table into wrapper
+            wrapper.appendChild(table);
+        });
+    }
+    
+    /**
      * Scroll to specific section in content
      */
     function scrollToSection(sectionIndex) {
