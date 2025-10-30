@@ -249,9 +249,9 @@ body {
 
 .container {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 0 15px;
+    padding: 0 20px;
 }
 
 a {
@@ -377,11 +377,16 @@ main {
 main .container {
     display: flex;
     gap: 30px;
+    align-items: flex-start;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 /* ===== SIDEBAR ===== */
 .sidebar {
-    width: 280px;
+    width: 300px;
+    min-width: 300px;
+    max-width: 300px;
     background-color: var(--sidebar-bg);
     border-radius: var(--border-radius);
     padding: 16px;
@@ -393,6 +398,7 @@ main .container {
     position: sticky;
     top: 90px;
     transition: var(--transition);
+    flex-shrink: 0;
 }
 
 .nav-link {
@@ -622,6 +628,8 @@ main .container {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.3);
+    max-width: 100%;
+    width: 100%;
 }
 
 .content-section {
@@ -636,6 +644,8 @@ main .container {
     min-height: 80vh;
     transition: var(--transition);
     margin-bottom: 2rem;
+    max-width: 100%;
+    width: 100%;
 }
 
 .content-section h1 {
@@ -1073,10 +1083,12 @@ footer p {
 @media (max-width: 992px) {
     main .container {
         flex-direction: column;
+        max-width: 100%;
     }
     
     .sidebar {
         width: 100%;
+        max-width: 100%;
         height: auto;
         max-height: 60vh;
         position: relative;
@@ -1086,10 +1098,20 @@ footer p {
     
     .content {
         width: 100%;
+        max-width: 100%;
+    }
+    
+    .content-section {
+        width: 100%;
+        max-width: 100%;
     }
 }
 
 @media (max-width: 768px) {
+    .container {
+        padding: 0 16px;
+    }
+    
     .logo h1 {
         font-size: 1.2rem;
     }
@@ -1103,7 +1125,7 @@ footer p {
         top: 70px;
         left: -100%;
         width: 85%;
-        max-width: 300px;
+        max-width: 320px;
         height: calc(100vh - 60px);
         z-index: 1100;
         transition: left 0.3s ease;
@@ -1117,6 +1139,14 @@ footer p {
     
     .content {
         padding: 20px;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .content-section {
+        padding: 1.5rem;
+        width: 100%;
+        max-width: 100%;
     }
     
     .header-controls {
@@ -1155,6 +1185,10 @@ footer p {
 }
 
 @media (max-width: 480px) {
+    .container {
+        padding: 0 12px;
+    }
+    
     header {
         padding: 10px 0;
     }
@@ -1169,10 +1203,19 @@ footer p {
     
     .sidebar {
         width: 90%;
+        max-width: 90%;
     }
     
     .content {
         padding: 15px;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .content-section {
+        padding: 1rem;
+        width: 100%;
+        max-width: 100%;
     }
     
     #markdown-content h1 {
@@ -2452,56 +2495,61 @@ footer p {
 /* ===== CHATBOT STYLES ===== */
 .chatbot-container {
     position: fixed;
-    bottom: 30px;
-    right: 30px;
+    bottom: 24px;
+    right: 24px;
     z-index: 1050;
 }
 
 .chatbot-toggle-btn {
-    width: 60px;
-    height: 60px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
     color: white;
     border: none;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     cursor: pointer;
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 20px rgba(var(--primary-color-rgb), 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
 }
 
 .chatbot-toggle-btn:hover {
-    transform: scale(1.1) rotate(15deg);
-    box-shadow: 0 10px 25px rgba(var(--primary-color-rgb), 0.5);
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), 0 0 25px rgba(var(--primary-color-rgb), 0.6);
+}
+
+.chatbot-toggle-btn:active {
+    transform: scale(0.95);
 }
 
 .chatbot-window {
     position: absolute;
-    bottom: 80px;
+    bottom: 70px;
     right: 0;
-    width: 350px;
-    max-width: 90vw;
-    height: 500px;
-    max-height: 70vh;
+    width: 380px;
+    max-width: calc(100vw - 48px);
+    height: 550px;
+    max-height: calc(100vh - 120px);
     background-color: var(--sidebar-bg);
     border-radius: var(--border-radius);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     display: none; /* Hidden by default */
     flex-direction: column;
     overflow: hidden;
     transform-origin: bottom right;
-    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
-    transform: scale(0.5);
+    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.3s ease;
+    transform: scale(0.8) translateY(20px);
     opacity: 0;
     border: 1px solid var(--border-color);
 }
 
 .chatbot-window.active {
     display: flex; /* Becomes visible when active */
-    transform: scale(1);
+    transform: scale(1) translateY(0);
     opacity: 1;
 }
 
@@ -2604,14 +2652,45 @@ footer p {
     background-color: var(--primary-dark);
 }
 
-@media (max-width: 480px) {
+/* Tablet responsiveness for chatbot */
+@media (max-width: 768px) {
     .chatbot-container {
         bottom: 20px;
         right: 20px;
     }
+    
+    .chatbot-toggle-btn {
+        width: 52px;
+        height: 52px;
+        font-size: 1.4rem;
+    }
+    
     .chatbot-window {
-        width: calc(100vw - 40px);
-        height: calc(100vh - 100px);
-        bottom: 70px;
+        width: calc(100vw - 60px);
+        max-width: 400px;
+        height: 500px;
+        right: -10px;
+    }
+}
+
+/* Mobile responsiveness for chatbot */
+@media (max-width: 480px) {
+    .chatbot-container {
+        bottom: 16px;
+        right: 16px;
+    }
+    
+    .chatbot-toggle-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 1.3rem;
+    }
+    
+    .chatbot-window {
+        width: calc(100vw - 32px);
+        height: calc(100vh - 120px);
+        max-height: 600px;
+        bottom: 64px;
+        right: -8px;
     }
 }
