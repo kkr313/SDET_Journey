@@ -909,7 +909,7 @@ main .container {
 }
 
 #markdown-content pre {
-    background-color: rgba(241, 245, 249, 0.7);
+    background-color: rgb(241 245 249 / 15%);
     padding: 1rem;
     border-radius: var(--border-radius);
     overflow-x: auto;
@@ -2328,14 +2328,14 @@ footer p {
 }
 
 .search-header {
-    padding: 12px 0;
+    padding: 12px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     margin-bottom: 12px;
 }
 
 .search-count {
     font-size: 0.85rem;
-    color: var(--secondary-color);
+    color: #fff;
     font-weight: 500;
 }
 
