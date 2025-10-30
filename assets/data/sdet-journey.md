@@ -3305,7 +3305,4 @@ Have questions or suggestions for this guide?
 
 ---
 
-*Last Updated: October 2025*  
-*Version: 2.0*
-
 **Happy Testing & Automating!** 🎉
