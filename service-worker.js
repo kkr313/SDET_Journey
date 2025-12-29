@@ -13,7 +13,8 @@ const urlsToCache = [
   '/assets/data/code-interview.md',
   '/assets/data/getting-started.md',
   '/assets/data/manual-concepts.md',
-  '/assets/data/test-automation-frameworks.md'
+  '/assets/data/test-automation-frameworks.md',
+  '/assets/data/automation/playwright-automation-guide.md'
 ];
 
 // Install event - cache assets

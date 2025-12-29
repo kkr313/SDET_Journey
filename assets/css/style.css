@@ -216,6 +216,18 @@ body.light-theme {
     box-sizing: border-box;
 }
 
+/* Prevent all elements from overflowing */
+*, *::before, *::after {
+    max-width: 100%;
+}
+
+/* Ensure proper word breaking for long text */
+p, li, td, th, div, span {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
 /* ===== GENERAL STYLES ===== */
 
 html {
@@ -233,7 +245,14 @@ html {
   transition: background-color 0.3s ease;
 }
 
-/* ===== BODY ===== */
+/* ===== BODY & LAYOUT FOUNDATION ===== */
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    width: 100%;
+    height: 100%;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--body-bg);
@@ -245,6 +264,12 @@ body {
     line-height: 1.6;
     min-height: 100vh;
     transition: background-color 0.3s ease, color 0.3s ease;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    width: 100%;
+    max-width: 100vw;
+    position: relative;
+    margin: 0;
+    padding: 0;
 }
 
 .container {
@@ -252,6 +277,12 @@ body {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 20px;
+    box-sizing: border-box;
+}
+
+/* Prevent all elements from overflowing */
+*, *::before, *::after {
+    max-width: 100%;
 }
 
 a {
@@ -279,26 +310,31 @@ header {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border-color);
+    width: 100%;
+    max-width: 100vw;
+    overflow: hidden;
 }
 
 header .container {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    max-width: 100%;
 }
 
 .logo h1 {
-    font-size: 1.5rem;
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
     font-weight: 600;
     color: var(--primary-color);
     display: flex;
     align-items: center;
     gap: 10px;
     text-shadow: 0 0 10px var(--primary-glow);
+    white-space: nowrap;
 }
 
 .logo i {
-    font-size: 1.8rem;
+    font-size: clamp(1.3rem, 4vw, 1.8rem);
     filter: drop-shadow(0 0 5px var(--primary-glow));
 }
 
@@ -368,10 +404,13 @@ header .container {
     display: none;
 }
 
-/* ===== MAIN CONTENT ===== */
+/* ===== MAIN CONTENT LAYOUT ===== */
 main {
     padding: 30px 0;
     min-height: calc(100vh - 130px);
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
 }
 
 main .container {
@@ -380,6 +419,10 @@ main .container {
     align-items: flex-start;
     max-width: 1400px;
     margin: 0 auto;
+    width: 100%;
+    min-height: calc(100vh - 160px);
+    position: relative;
+    overflow: visible;
 }
 
 /* ===== SIDEBAR ===== */
@@ -395,10 +438,14 @@ main .container {
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     height: fit-content;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    overflow-x: hidden;
     position: sticky;
     top: 90px;
     transition: var(--transition);
     flex-shrink: 0;
+    box-sizing: border-box;
 }
 
 .nav-link {
@@ -623,13 +670,17 @@ main .container {
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-md);
     padding: 30px;
-    min-height: 90vh;
+    min-height: calc(100vh - 160px);
     transition: var(--transition);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.3);
-    max-width: 100%;
-    width: 100%;
+    max-width: calc(100% - 330px); /* Account for sidebar + gap */
+    width: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
+    position: relative;
 }
 
 .content-section {
@@ -646,29 +697,34 @@ main .container {
     margin-bottom: 2rem;
     max-width: 100%;
     width: 100%;
+    overflow-x: hidden;
+    word-wrap: break-word;
 }
 
 .content-section h1 {
-    font-size: 2rem;
+    font-size: clamp(1.5rem, 4vw, 2rem);
     margin-bottom: 1.5rem;
     color: var(--primary-color);
     text-shadow: 0 0 10px var(--primary-glow);
     border-bottom: 2px solid var(--primary-color);
     padding-bottom: 0.5rem;
+    word-wrap: break-word;
 }
 
 .content-section h2 {
-    font-size: 1.5rem;
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
     margin: 25px 0 15px;
     color: var(--secondary-color);
     border-left: 4px solid var(--secondary-color);
     padding-left: 1rem;
+    word-wrap: break-word;
 }
 
 .content-section h3 {
-    font-size: 1.25rem;
+    font-size: clamp(1.1rem, 2.5vw, 1.25rem);
     margin: 20px 0 10px;
     color: var(--accent-color);
+    word-wrap: break-word;
 }
 
 .content-section p, .content-section li {
@@ -694,6 +750,9 @@ main .container {
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-md);
     position: relative;
+    max-width: 100%;
+    word-wrap: break-word;
+    white-space: pre-wrap;
 }
 
 .content-section pre::before {
@@ -780,7 +839,7 @@ main .container {
     font-style: italic;
 }
 
-/* Responsive table wrapper */
+/* Enhanced responsive table wrapper */
 .table-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -789,14 +848,26 @@ main .container {
     box-shadow: var(--shadow-sm);
     background-color: var(--content-bg);
     border: 1px solid var(--border-color);
+    max-width: 100%;
+    width: 100%;
 }
 
 .content-section table,
 #markdown-content table {
     width: 100%;
-    min-width: 600px; /* Ensures table doesn't get too cramped */
+    min-width: 100%; /* Changed from 600px to be more responsive */
     border-collapse: collapse;
     margin: 0;
+    table-layout: auto; /* Allow flexible column widths */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Ensure tables are properly wrapped */
+#markdown-content table {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .content-section th, .content-section td,
@@ -806,6 +877,20 @@ main .container {
     text-align: left;
     vertical-align: top;
     white-space: normal; /* Allow text wrapping in cells for better readability */
+    word-wrap: break-word;
+    max-width: 250px; /* Prevent cells from becoming too wide */
+    overflow-wrap: break-word;
+}
+
+/* Responsive images */
+.content-section img,
+#markdown-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 1rem 0;
+    display: block;
 }
 
 .content-section th,
@@ -848,23 +933,148 @@ main .container {
     background: var(--primary-dark);
 }
 
-/* Mobile responsiveness */
+/* ===== MOBILE RESPONSIVENESS & CONSISTENT DESIGN ===== */
+
+/* Enhanced mobile-first responsive design */
 @media (max-width: 768px) {
-    .content-section table,
-    #markdown-content table {
-        min-width: 500px; /* Slightly narrower minimum on mobile */
+    /* Container adjustments */
+    .container {
+        padding: 0 12px;
     }
     
-    .content-section th, .content-section td,
-    #markdown-content th, #markdown-content td {
-        padding: 10px 12px;
-        font-size: 0.9rem;
+    /* Header improvements */
+    .logo h1 {
+        font-size: 1.2rem;
+    }
+    
+    .header-controls {
+        gap: 8px;
+    }
+    
+    .control-btn {
+        padding: 10px;
+        min-height: 44px; /* Touch-friendly */
+        min-width: 44px;
+    }
+    
+    .menu-toggle {
+        display: flex;
+        padding: 12px;
+        min-height: 48px;
+        min-width: 48px;
+    }
+    
+    /* Improved sidebar mobile behavior */
+    .sidebar {
+        position: fixed;
+        top: 70px;
+        left: -100%;
+        width: 85%;
+        max-width: 320px;
+        height: calc(100vh - 70px);
+        z-index: 1100;
+        transition: left 0.3s ease-in-out;
+        box-shadow: none;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .sidebar.active {
+        left: 0;
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Content area improvements */
+    .content {
+        padding: 20px 16px;
+        width: 100%;
+        min-height: calc(100vh - 70px);
+    }
+    
+    .content-section {
+        padding: 1.5rem 1rem;
+        width: 100%;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    
+    /* Typography consistency */
+    #markdown-content {
+        font-size: 16px;
+        line-height: 1.7;
+    }
+    
+    #markdown-content h1 {
+        font-size: 1.75rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        line-height: 1.3;
+    }
+    
+    #markdown-content h2 {
+        font-size: 1.4rem;
+        margin-top: 1.5rem;
+        margin-bottom: 0.8rem;
+        line-height: 1.4;
+    }
+    
+    #markdown-content h3 {
+        font-size: 1.2rem;
+        margin-top: 1.2rem;
+        margin-bottom: 0.6rem;
+        line-height: 1.4;
+    }
+      #markdown-content p {
+        margin-bottom: 1rem;
+        font-size: 15px;
+    }
+    
+    /* Better table responsive handling */
+    .table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1rem;
+        max-width: 100%;
+    }
+    
+    .content-section table,
+    #markdown-content table {
+        display: table; /* Keep as normal table */
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    /* Navigation buttons */
+    .topic-nav {
+        margin-top: 30px;
+        margin-bottom: 20px;
+        gap: 12px !important;
+    }
+    
+    .nav-btn {
+        padding: 12px 16px;
+        font-size: 14px;
+        min-height: 48px;
+        border-radius: 6px;
+        flex: 1;
+        max-width: 200px;
     }
 }
 
-/* Enhanced styling for content area */
+/* ===== CONTENT TYPOGRAPHY & SPACING ===== */
 #markdown-content {
     line-height: 1.8;
+    max-width: 100%;
+    overflow-x: hidden;
+    word-wrap: break-word;
+    box-sizing: border-box;
+}
+
+#markdown-content * {
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 #markdown-content h1, 
@@ -875,6 +1085,8 @@ main .container {
     color: var(--primary-color);
     font-weight: 600;
     text-shadow: 0 0 5px var(--primary-glow);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 #markdown-content h1 {
@@ -1080,15 +1292,37 @@ footer p {
 }
 
 /* ===== RESPONSIVE STYLES ===== */
+
+/* Large Tablets and Small Desktops (992px - 1200px) */
+@media (max-width: 1200px) {
+    .container {
+        max-width: 100%;
+        padding: 0 16px;
+    }
+    
+    .sidebar {
+        width: 280px;
+        min-width: 280px;
+        max-width: 280px;
+    }
+    
+    .content {
+        max-width: calc(100% - 310px);
+    }
+}
+
+/* Tablet Landscape and Medium Devices (768px - 992px) */
 @media (max-width: 992px) {
     main .container {
         flex-direction: column;
         max-width: 100%;
+        gap: 20px;
     }
     
     .sidebar {
         width: 100%;
         max-width: 100%;
+        min-width: auto;
         height: auto;
         max-height: 60vh;
         position: relative;
@@ -1099,21 +1333,41 @@ footer p {
     .content {
         width: 100%;
         max-width: 100%;
+        padding: 24px;
     }
     
     .content-section {
         width: 100%;
         max-width: 100%;
+        padding: 1.75rem;
+    }
+    
+    #markdown-content {
+        font-size: 16px;
     }
 }
 
+/* Tablet Portrait and Small Devices (481px - 768px) */
 @media (max-width: 768px) {
+    body {
+        font-size: 15px;
+    }
+    
     .container {
-        padding: 0 16px;
+        padding: 0 12px;
+    }
+    
+    header {
+        padding: 12px 0;
     }
     
     .logo h1 {
-        font-size: 1.2rem;
+        font-size: clamp(1rem, 3.5vw, 1.2rem);
+        gap: 8px;
+    }
+    
+    .logo i {
+        font-size: clamp(1.2rem, 4vw, 1.5rem);
     }
     
     .menu-toggle {
@@ -1126,10 +1380,11 @@ footer p {
         left: -100%;
         width: 85%;
         max-width: 320px;
-        height: calc(100vh - 60px);
+        height: calc(100vh - 70px);
         z-index: 1100;
         transition: left 0.3s ease;
         max-height: none;
+        overflow-y: auto;
     }
     
     .sidebar.active {
@@ -1137,8 +1392,12 @@ footer p {
         box-shadow: var(--shadow-lg);
     }
     
+    main {
+        padding: 20px 0;
+    }
+    
     .content {
-        padding: 20px;
+        padding: 20px 16px;
         width: 100%;
         max-width: 100%;
     }
@@ -1160,19 +1419,19 @@ footer p {
     }
     
     #markdown-content h1 {
-        font-size: 1.8rem;
+        font-size: clamp(1.4rem, 5vw, 1.8rem);
     }
     
     #markdown-content h2 {
-        font-size: 1.4rem;
+        font-size: clamp(1.2rem, 4vw, 1.4rem);
     }
     
     #markdown-content h3 {
-        font-size: 1.2rem;
+        font-size: clamp(1.1rem, 3.5vw, 1.2rem);
     }
     
     .welcome-message h2 {
-        font-size: 2rem;
+        font-size: clamp(1.5rem, 5vw, 2rem);
     }
     
     .welcome-message p {
@@ -1180,13 +1439,31 @@ footer p {
     }
     
     .icon-container {
-        font-size: 4rem;
+        font-size: clamp(3rem, 10vw, 4rem);
+    }
+    
+    /* Table improvements for tablets */
+    .content-section table,
+    #markdown-content table {
+        font-size: 14px;
+    }
+    
+    .content-section th, .content-section td,
+    #markdown-content th, #markdown-content td {
+        padding: 10px 8px;
+        font-size: 13px;
+        max-width: 200px;
     }
 }
 
+/* Mobile Devices (320px - 480px) */
 @media (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+    
     .container {
-        padding: 0 12px;
+        padding: 0 8px;
     }
     
     header {
@@ -1194,52 +1471,281 @@ footer p {
     }
     
     .logo h1 {
-        font-size: 1rem;
+        font-size: clamp(0.9rem, 4vw, 1.1rem);
+        gap: 6px;
     }
     
     .logo i {
-        font-size: 1.4rem;
+        font-size: clamp(1rem, 4.5vw, 1.3rem);
+    }
+    
+    .header-controls {
+        gap: 4px;
+    }
+    
+    .control-btn, .menu-toggle {
+        width: 36px;
+        height: 36px;
+        font-size: 0.85rem;
+        padding: 8px;
     }
     
     .sidebar {
         width: 90%;
-        max-width: 90%;
+        max-width: 280px;
+        top: 60px;
+        height: calc(100vh - 60px);
+    }
+    
+    main {
+        padding: 16px 0;
     }
     
     .content {
-        padding: 15px;
-        width: 100%;
-        max-width: 100%;
+        padding: 16px 12px;
     }
     
     .content-section {
-        padding: 1rem;
-        width: 100%;
-        max-width: 100%;
+        padding: 1rem 0.75rem;
+    }
+    
+    /* Typography for small screens */
+    #markdown-content {
+        font-size: 14px;
     }
     
     #markdown-content h1 {
-        font-size: 1.6rem;
+        font-size: clamp(1.3rem, 6vw, 1.6rem);
+        margin-bottom: 1rem;
     }
     
     #markdown-content h2 {
-        font-size: 1.3rem;
+        font-size: clamp(1.15rem, 5vw, 1.3rem);
+        margin: 20px 0 12px;
     }
     
     #markdown-content h3 {
-        font-size: 1.1rem;
+        font-size: clamp(1.05rem, 4.5vw, 1.15rem);
+        margin: 16px 0 8px;
     }
     
+    #markdown-content p {
+        font-size: 14px;
+        margin-bottom: 1rem;
+    }
+    
+    #markdown-content li {
+        font-size: 14px;
+        margin-bottom: 0.4rem;
+    }
+    
+    /* Welcome message adjustments */
     .welcome-message {
         padding: 1.5rem 0.5rem;
     }
     
     .welcome-message h2 {
-        font-size: 1.8rem;
+        font-size: clamp(1.3rem, 6vw, 1.8rem);
+    }
+    
+    .welcome-message p {
+        font-size: 14px;
     }
     
     .icon-container {
-        font-size: 3.5rem;
+        font-size: clamp(2.5rem, 10vw, 3.5rem);
+    }
+    
+    /* Navigation improvements */
+    .nav-btn {
+        padding: 10px 12px;
+        font-size: 13px;
+        min-height: 44px;
+    }
+    
+    .nav-title {
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    /* Mobile table improvements */
+    .content-section th, .content-section td,
+    #markdown-content th, #markdown-content td {
+        padding: 8px 6px;
+        font-size: 12px;
+        max-width: 120px;
+        line-height: 1.3;
+    }
+    
+    .table-wrapper {
+        margin: 0.75rem 0;
+        border-radius: 6px;
+    }
+    
+    /* Code blocks on mobile */
+    .content-section pre {
+        padding: 0.8rem;
+        margin: 1rem 0;
+        font-size: 12px;
+    }
+    
+    .content-section code {
+        font-size: 12px;
+    }
+}
+
+/* Extra Small Devices (320px and below) */
+@media (max-width: 320px) {
+    body {
+        font-size: 13px;
+    }
+    
+    .container {
+        padding: 0 6px;
+    }
+    
+    .logo h1 {
+        font-size: 0.9rem;
+        gap: 4px;
+    }
+    
+    .logo i {
+        font-size: 1rem;
+    }
+    
+    .control-btn, .menu-toggle {
+        width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+    }
+    
+    .header-controls {
+        gap: 3px;
+    }
+    
+    .content {
+        padding: 12px 8px;
+    }
+    
+    .content-section {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    #markdown-content {
+        font-size: 13px;
+    }
+    
+    #markdown-content h1 {
+        font-size: 1.2rem;
+    }
+    
+    #markdown-content h2 {
+        font-size: 1.1rem;
+    }
+    
+    #markdown-content h3 {
+        font-size: 1rem;
+    }
+}
+
+/* Large Desktops and Ultra-Wide Screens (1400px+) */
+@media (min-width: 1400px) {
+    .container {
+        max-width: 1600px;
+    }
+    
+    .sidebar {
+        width: 320px;
+        min-width: 320px;
+        max-width: 320px;
+    }
+    
+    .content {
+        max-width: calc(100% - 350px);
+        padding: 40px;
+    }
+    
+    .content-section {
+        padding: 2.5rem;
+    }
+}
+
+/* Extra Large Ultra-Wide Screens (1920px+) */
+@media (min-width: 1920px) {
+    .container {
+        max-width: 1800px;
+    }
+    
+    .sidebar {
+        width: 350px;
+        min-width: 350px;
+        max-width: 350px;
+    }
+    
+    .content {
+        max-width: calc(100% - 380px);
+        padding: 50px;
+    }
+    
+    .content-section {
+        padding: 3rem;
+    }
+    
+    #markdown-content {
+        font-size: 17px;
+        line-height: 1.8;
+    }
+}
+
+/* Mobile Landscape Mode (Horizontal Orientation) */
+@media (max-width: 768px) and (orientation: landscape) {
+    header {
+        padding: 8px 0;
+    }
+    
+    .logo h1 {
+        font-size: 1rem;
+    }
+    
+    .sidebar {
+        top: 60px;
+        height: calc(100vh - 60px);
+        max-width: 280px;
+    }
+    
+    main {
+        padding: 15px 0;
+    }
+    
+    .content {
+        padding: 16px;
+    }
+    
+    .content-section {
+        padding: 1.25rem;
+    }
+    
+    #markdown-content h1 {
+        font-size: 1.5rem;
+    }
+    
+    #markdown-content h2 {
+        font-size: 1.3rem;
+    }
+}
+
+/* Tablet Landscape Mode */
+@media (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
+    .sidebar {
+        width: 260px;
+        min-width: 260px;
+        max-width: 260px;
+    }
+    
+    .content {
+        padding: 20px;
     }
 }
 
@@ -1624,7 +2130,7 @@ footer p {
   padding: 1rem;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var (--border-color);
 }
 
 .test-case {
@@ -1992,10 +2498,14 @@ footer p {
     position: relative;
     display: flex;
     align-items: center;
+    width: 100%;
+    max-width: 100%;
 }
 
 .search-input-wrapper #search-input {
     padding-right: 70px; /* Space for icons */
+    width: 100%;
+    max-width: 100%;
 }
 
 .search-icon {
@@ -2108,7 +2618,7 @@ footer p {
 .search-snippet {
     font-size: 0.8rem;
     line-height: 1.4;
-    color: var(--secondary-color);
+    color: var (--secondary-color);
     padding: 6px 8px;
     border-radius: 4px;
     background: rgba(255, 255, 255, 0.03);
@@ -2692,5 +3202,437 @@ footer p {
         max-height: 600px;
         bottom: 64px;
         right: -8px;
+    }
+}
+
+/* ===== TABLET RESPONSIVE STYLES (768px - 1024px) ===== */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .container {
+        padding: 0 20px;
+    }
+    
+    .sidebar {
+        width: 280px;
+        min-width: 280px;
+        max-width: 280px;
+    }
+    
+    .content {
+        padding: 25px;
+    }
+    
+    .content-section {
+        padding: 1.75rem;
+    }
+    
+    /* Adjust typography for tablet screens */
+    #markdown-content {
+        font-size: 16px;
+        line-height: 1.7;
+    }
+    
+    #markdown-content h1 {
+        font-size: 1.9rem;
+    }
+    
+    #markdown-content h2 {
+        font-size: 1.5rem;
+    }
+    
+    #markdown-content h3 {
+        font-size: 1.3rem;
+    }
+    
+    /* Better table handling on tablets */
+    .table-wrapper {
+        margin: 1.5rem 0;
+    }
+    
+    .content-section table,
+    #markdown-content table {
+        font-size: 15px;
+    }
+    
+    .content-section th, .content-section td,
+    #markdown-content th, #markdown-content td {
+        padding: 14px 16px;
+    }
+}
+
+/* ===== CONSISTENT CONTENT STYLING FOR ALL PAGES ===== */
+/* Ensure all markdown content has consistent spacing and typography */
+#markdown-content {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Consistent paragraph spacing */
+#markdown-content p {
+    margin-bottom: 1.2rem;
+    line-height: 1.7;
+    text-align: justify;
+    hyphens: auto;
+}
+
+/* Consistent list styling */
+#markdown-content ul li,
+#markdown-content ol li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+#markdown-content ul li::marker,
+#markdown-content ol li::marker {
+    color: var(--primary-color);
+}
+
+/* Enhanced blockquote styling */
+#markdown-content blockquote {
+    margin: 1.5rem 0;
+    padding: 1.2rem 1.5rem;
+    background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.05), rgba(var(--secondary-color-rgb), 0.05));
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 1px rgba(var(--primary-color-rgb), 0.2);
+}
+
+/* Improved code block styling */
+#markdown-content pre {
+    position: relative;
+    margin: 1.5rem 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+#markdown-content pre code {
+    display: block;
+    line-height: 1.5;
+    font-size: 0.9rem;
+}
+
+/* Better link styling */
+#markdown-content a {
+    color: var(--primary-color);
+    text-decoration: underline;
+    text-decoration-color: rgba(var(--primary-color-rgb), 0.4);
+    text-underline-offset: 3px;
+    transition: all 0.3s ease;
+}
+
+#markdown-content a:hover {
+    color: var(--primary-dark);
+    text-decoration-color: var(--primary-dark);
+    text-shadow: 0 0 5px var(--primary-glow);
+}
+
+/* Enhanced image styling */
+#markdown-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 1rem 0;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Better horizontal rule styling */
+#markdown-content hr {
+    border: none;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+    margin: 2rem 0;
+    border-radius: 1px;
+}
+
+/* ===== LOADING AND ERROR STATES ===== */
+.loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    text-align: center;
+    color: var(--secondary-color);
+}
+
+.loading-content::before {
+    content: '';
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border-color);
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error-message {
+    padding: 2rem;
+    text-align: center;
+    color: var(--danger-color);
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: var(--border-radius);
+    margin: 1rem 0;
+}
+
+.content-coming-soon {
+    padding: 3rem 2rem;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(var(--secondary-color-rgb), 0.05), rgba(var(--accent-color-rgb), 0.05));
+    border: 1px dashed var(--secondary-color);
+    border-radius: var(--border-radius);
+}
+
+.content-coming-soon h2 {
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+}
+
+.content-coming-soon p {
+    color: var(--text-muted);
+    margin-bottom: 0.8rem;
+}
+
+/* ===== ACCESSIBILITY IMPROVEMENTS ===== */
+/* Focus styles for better keyboard navigation */
+button:focus,
+.nav-btn:focus,
+.control-btn:focus,
+.menu-toggle:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Skip to content link for screen readers */
+.skip-to-content {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--primary-color);
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 4px;
+    z-index: 1000;
+    transition: top 0.3s;
+}
+
+.skip-to-content:focus {
+    top: 6px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    :root {
+        --primary-color: #0066cc;
+        --text-color: #000000;
+        --body-bg: #ffffff;
+        --border-color: #333333;
+    }
+    
+    body.light-theme {
+        --text-color: #000000;
+        --body-bg: #ffffff;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .icon-container {
+        animation: none;
+    }
+}
+
+/* ===== TOUCH DEVICE OPTIMIZATIONS ===== */
+@media (hover: none) and (pointer: coarse) {
+    /* Increase touch targets for mobile devices */
+    .control-btn,
+    .menu-toggle,
+    .nav-btn,
+    .practice-tab,
+    .topic-item {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Remove hover effects on touch devices */
+    .topic-item:hover {
+        transform: none;
+        background: rgba(var(--primary-color-rgb), 0.1);
+    }
+    
+    /* Improve scrolling on touch devices */
+    .sidebar,
+    .content,
+    .table-wrapper,
+    #search-results {
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* ===== IMPROVED TABLE RESPONSIVENESS ===== */
+
+/* Desktop table styles (default) */
+.content-section table,
+#markdown-content table {
+    width: 100%;
+    max-width: 100%;
+    table-layout: auto;
+    border-collapse: collapse;
+    margin: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    font-size: 15px;
+}
+
+.content-section th, .content-section td,
+#markdown-content th, #markdown-content td {
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    text-align: left;
+    vertical-align: top;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+}
+
+/* Make sure tables fit within their containers */
+.table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    border-radius: var(--border-radius);
+    background: var(--content-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Only apply mobile-specific styles on mobile devices */
+@media (max-width: 768px) {
+    .content-section table,
+    #markdown-content table {
+        font-size: 14px;
+        min-width: 100%;
+        display: table; /* Keep as table on tablet */
+    }
+    
+    .content-section th, .content-section td,
+    #markdown-content th, #markdown-content td {
+        padding: 10px 8px;
+        font-size: 13px;
+        max-width: 200px;
+        hyphens: auto;
+        word-break: break-word;
+    }
+}
+
+/* Only for very small screens - transform to card layout */
+@media (max-width: 480px) {
+    .content-section table,
+    #markdown-content table {
+        font-size: 13px;
+    }
+    
+    .content-section th, .content-section td,
+    #markdown-content th, #markdown-content td {
+        padding: 8px 6px;
+        font-size: 12px;
+        max-width: 120px;
+        line-height: 1.3;
+    }
+}
+
+/* ===== SPECIFIC FIXES FOR WIDE TABLES ===== */
+/* Ensure long table content doesn't break layout */
+#markdown-content table td,
+#markdown-content table th {
+    max-width: none; /* Remove max-width constraint for desktop */
+    min-width: 120px; /* Minimum width for readability */
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    line-height: 1.5;
+}
+
+/* Better handling for emoji and long text in tables */
+#markdown-content table {
+    table-layout: auto;
+    width: 100%;
+    border-spacing: 0;
+}
+
+/* Table scroll hint styling */
+.table-scroll-hint {
+    text-align: center !important;
+    font-size: 12px !important;
+    color: rgba(var(--text-color), 0.6) !important;
+    margin-top: 8px !important;
+    font-style: italic !important;
+    padding: 4px 8px !important;
+    background: rgba(var(--primary-color-rgb), 0.05) !important;
+    border-radius: 4px !important;
+    display: none !important;
+}
+
+/* Show scroll hint only on mobile when table is scrollable */
+@media (max-width: 768px) {
+    .table-scroll-hint {
+        display: block !important;
+    }
+}
+
+/* Ensure wrapper doesn't overflow container */
+.table-wrapper {
+    position: relative;
+    margin: 1.5rem 0;
+    border-radius: var(--border-radius);
+    background: var(--content-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    max-width: 100%;
+    width: 100%;
+    overflow: hidden; /* Prevent any overflow issues */
+}
+
+.table-wrapper table {
+    margin: 0 !important;
+    width: 100%;
+}
+
+/* Better mobile table experience */
+@media (max-width: 768px) {
+    .table-wrapper {
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+    
+    .table-wrapper::-webkit-scrollbar {
+        height: 6px;
+    }
+    
+    .table-wrapper::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+    }
+    
+    .table-wrapper::-webkit-scrollbar-thumb {
+        background: var(--primary-color);
+        border-radius: 3px;
     }
 }

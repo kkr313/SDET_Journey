@@ -23,16 +23,16 @@ $(document).ready(function() {
                 { id: 'manual-concepts', title: 'Manual Concepts' },
                 { id: 'web-mobile-manual-testing', title: 'Web & Mobile Manual Testing' }
             ]
-        },
-        {
+        },        {
             id: 'automation',
             title: 'Test Automation',
             icon: 'fas fa-robot',
             topics: [
                 { id: 'test-automation-frameworks', title: 'Test Automation Frameworks' },
+                { id: 'playwright-automation-guide', title: 'Playwright Automation Guide', path: 'automation/playwright-automation-guide' },
                 { id: 'api-testing', title: 'API Testing Fundamentals' }
             ]
-        },        {
+        },{
             id: 'coding',
             title: 'DSA & Coding',
             icon: 'fas fa-code',
@@ -593,11 +593,11 @@ $(document).ready(function() {
      */
     async function buildSearchIndex() {
         searchIndex = {};
-        
-        const promises = TOPICS.map(topic => {
+          const promises = TOPICS.map(topic => {
             if (checkFileExists(topic.id)) {
+                const filePath = topic.path ? `assets/data/${topic.path}.md` : `assets/data/${topic.id}.md`;
                 return $.ajax({
-                    url: `assets/data/${topic.id}.md`,
+                    url: filePath,
                     dataType: 'text'
                 }).then(markdown => {
                     indexTopicContent(topic, markdown);
@@ -859,14 +859,17 @@ $(document).ready(function() {
         }
         
         const fileExists = checkFileExists(topicId);
-        
-        if (!fileExists) {
+          if (!fileExists) {
             showComingSoonMessage($content);
             return;
         }
+
+        // Find the topic to get the correct path
+        const topic = TOPICS.find(t => t.id === topicId);
+        const filePath = topic && topic.path ? `assets/data/${topic.path}.md` : `assets/data/${topicId}.md`;
         
         $.ajax({
-            url: `assets/data/${topicId}.md`,
+            url: filePath,
             dataType: 'text',
             success: function(markdown) {
                 const html = marked.parse(markdown);
@@ -932,12 +935,12 @@ $(document).ready(function() {
             }
         });
     }
-    
-    /**
+      /**
      * Wrap all tables in responsive containers for horizontal scrolling
      */
     function wrapTablesForResponsiveness() {
-        const tables = document.querySelectorAll('#markdown-content table');
+        // Select all tables in markdown content
+        const tables = document.querySelectorAll('#markdown-content table, .content-section table');
         
         tables.forEach(table => {
             // Check if table is already wrapped
@@ -954,6 +957,25 @@ $(document).ready(function() {
             
             // Move table into wrapper
             wrapper.appendChild(table);
+            
+            // Add responsive attributes for better mobile handling
+            table.style.maxWidth = '100%';
+            table.style.width = '100%';
+            
+            // Add touch scrolling indicator for mobile
+            if (window.innerWidth <= 768) {
+                const scrollHint = document.createElement('div');
+                scrollHint.className = 'table-scroll-hint';
+                scrollHint.innerHTML = '← Scroll horizontally to see more →';
+                scrollHint.style.cssText = `
+                    text-align: center;
+                    font-size: 12px;
+                    color: var(--text-muted);
+                    margin-top: 5px;
+                    font-style: italic;
+                `;
+                wrapper.appendChild(scrollHint);
+            }
         });
     }
     
@@ -981,12 +1003,11 @@ $(document).ready(function() {
     
     /**
      * Check if topic file exists
-     */
-    function checkFileExists(topicId) {
+     */    function checkFileExists(topicId) {
         const availableFiles = [
             'getting-started', 'test-automation-frameworks', 'ci-cd-pipelines',
             'agile-methodology', 'manual-concepts', 'api-testing', 'coding-interview-practice',
-            'web-mobile-manual-testing', 'sdet-journey', 'git-github-actions'
+            'web-mobile-manual-testing', 'sdet-journey', 'git-github-actions', 'playwright-automation-guide'
         ];
         return availableFiles.includes(topicId);
     }
