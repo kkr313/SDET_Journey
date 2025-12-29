@@ -958,9 +958,9 @@ $(document).ready(function() {
             // Move table into wrapper
             wrapper.appendChild(table);
             
-            // Add responsive attributes for better mobile handling
-            table.style.maxWidth = '100%';
-            table.style.width = '100%';
+            // Remove inline styles that prevent scrolling
+            table.style.maxWidth = '';
+            table.style.width = '';
             
             // Add touch scrolling indicator for mobile
             if (window.innerWidth <= 768) {

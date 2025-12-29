@@ -216,13 +216,20 @@ body.light-theme {
     box-sizing: border-box;
 }
 
-/* Prevent all elements from overflowing */
-*, *::before, *::after {
+/* Prevent all elements from overflowing (except tables inside table-wrapper) */
+*:not(table):not(.table-wrapper table), 
+*::before, 
+*::after {
     max-width: 100%;
 }
 
-/* Ensure proper word breaking for long text */
-p, li, td, th, div, span {
+/* Tables inside wrapper can exceed container width for scrolling */
+.table-wrapper table {
+    max-width: none !important;
+}
+
+/* Ensure proper word breaking for long text (not in table cells) */
+p, li, div:not(.table-wrapper), span {
     word-wrap: break-word;
     overflow-wrap: break-word;
     hyphens: auto;
@@ -850,24 +857,26 @@ main .container {
     border: 1px solid var(--border-color);
     max-width: 100%;
     width: 100%;
+    position: relative;
+    display: block;
 }
 
 .content-section table,
 #markdown-content table {
-    width: 100%;
-    min-width: 100%; /* Changed from 600px to be more responsive */
+    width: max-content;
+    min-width: 100%;
     border-collapse: collapse;
     margin: 0;
-    table-layout: auto; /* Allow flexible column widths */
+    table-layout: auto;
     word-wrap: break-word;
     overflow-wrap: break-word;
+    display: table;
 }
 
 /* Ensure tables are properly wrapped */
 #markdown-content table {
-    max-width: 100%;
     overflow-wrap: break-word;
-    word-break: break-word;
+    word-break: normal;
 }
 
 .content-section th, .content-section td,
@@ -876,10 +885,9 @@ main .container {
     border: 1px solid var(--border-color);
     text-align: left;
     vertical-align: top;
-    white-space: normal; /* Allow text wrapping in cells for better readability */
-    word-wrap: break-word;
-    max-width: 250px; /* Prevent cells from becoming too wide */
-    overflow-wrap: break-word;
+    white-space: nowrap; /* Prevent wrapping to enable scrolling */
+    word-wrap: normal;
+    overflow-wrap: normal;
 }
 
 /* Responsive images */
@@ -916,21 +924,40 @@ main .container {
 
 /* Scrollbar styling for table wrapper */
 .table-wrapper::-webkit-scrollbar {
-    height: 8px;
+    height: 10px;
 }
 
 .table-wrapper::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
 }
 
 .table-wrapper::-webkit-scrollbar-thumb {
     background: var(--primary-color);
-    border-radius: 4px;
+    border-radius: 5px;
+    border: 2px solid var(--content-bg);
 }
 
 .table-wrapper::-webkit-scrollbar-thumb:hover {
     background: var(--primary-dark);
+}
+
+/* Add scroll indicator shadow */
+.table-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 30px;
+    background: linear-gradient(to left, rgba(0, 0, 0, 0.15), transparent);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.table-wrapper:not(:hover)::after {
+    opacity: 1;
 }
 
 /* ===== MOBILE RESPONSIVENESS & CONSISTENT DESIGN ===== */
@@ -1037,13 +1064,24 @@ main .container {
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         margin-bottom: 1rem;
         max-width: 100%;
+        display: block;
+        position: relative;
     }
     
     .content-section table,
     #markdown-content table {
-        display: table; /* Keep as normal table */
-        width: 100%;
-        max-width: 100%;
+        display: table;
+        width: max-content;
+        min-width: 100%;
+        max-width: none;
+    }
+    
+    .content-section th, .content-section td,
+    #markdown-content th, #markdown-content td {
+        padding: 10px 8px;
+        font-size: 13px;
+        white-space: nowrap;
+        min-width: 80px;
     }
     
     /* Navigation buttons */
@@ -1571,17 +1609,28 @@ footer p {
     }
     
     /* Mobile table improvements */
-    .content-section th, .content-section td,
-    #markdown-content th, #markdown-content td {
-        padding: 8px 6px;
-        font-size: 12px;
-        max-width: 120px;
-        line-height: 1.3;
-    }
-    
     .table-wrapper {
         margin: 0.75rem 0;
         border-radius: 6px;
+        overflow-x: scroll;
+        -webkit-overflow-scrolling: touch;
+        display: block;
+    }
+    
+    .content-section table,
+    #markdown-content table {
+        width: max-content;
+        min-width: 100%;
+        display: table;
+    }
+    
+    .content-section th, .content-section td,
+    #markdown-content th, #markdown-content td {
+        padding: 8px 12px;
+        font-size: 12px;
+        white-space: nowrap;
+        min-width: 100px;
+        line-height: 1.4;
     }
     
     /* Code blocks on mobile */
@@ -3607,12 +3656,15 @@ button:focus,
     box-shadow: var(--shadow-sm);
     max-width: 100%;
     width: 100%;
-    overflow: hidden; /* Prevent any overflow issues */
+    overflow-x: auto;
+    overflow-y: hidden;
+    display: block;
 }
 
 .table-wrapper table {
     margin: 0 !important;
-    width: 100%;
+    width: max-content;
+    min-width: 100%;
 }
 
 /* Better mobile table experience */
@@ -3620,19 +3672,50 @@ button:focus,
     .table-wrapper {
         -webkit-overflow-scrolling: touch;
         scrollbar-width: thin;
+        overflow-x: scroll;
+        scroll-behavior: smooth;
+        cursor: grab;
+    }
+    
+    .table-wrapper:active {
+        cursor: grabbing;
     }
     
     .table-wrapper::-webkit-scrollbar {
-        height: 6px;
+        height: 8px;
     }
     
     .table-wrapper::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 3px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
     }
     
     .table-wrapper::-webkit-scrollbar-thumb {
         background: var(--primary-color);
-        border-radius: 3px;
+        border-radius: 4px;
+        border: 1px solid var(--content-bg);
+    }
+    
+    .table-wrapper::-webkit-scrollbar-thumb:active {
+        background: var(--primary-dark);
+    }
+    
+    /* Show scroll hint on mobile */
+    .table-scroll-hint {
+        display: block !important;
+        text-align: center;
+        font-size: 11px;
+        color: var(--primary-color);
+        margin-top: 8px;
+        font-style: italic;
+        padding: 6px 12px;
+        background: rgba(var(--primary-color-rgb), 0.1);
+        border-radius: 6px;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 0.7; }
+        50% { opacity: 1; }
     }
 }
