@@ -11,7 +11,7 @@ $(document).ready(function() {
             title: 'SDET Roadmap',
             icon: 'fas fa-rocket',
             topics: [
-                { id: 'sdet-journey', title: 'The SDET Journey' }
+                { id: 'sdet-journey', title: 'The SDET Journey', path: 'sdet-roadmap/sdet-journey' }
             ]
         },
         {
@@ -19,31 +19,32 @@ $(document).ready(function() {
             title: 'SDET Fundamentals',
             icon: 'fas fa-graduation-cap',
             topics: [
-                { id: 'getting-started', title: 'Getting Started with SDET' },
-                { id: 'manual-concepts', title: 'Manual Concepts' },
-                { id: 'web-mobile-manual-testing', title: 'Web & Mobile Manual Testing' }
+                { id: 'getting-started', title: 'Getting Started with SDET', path: 'fundamentals/getting-started' },
+                { id: 'manual-concepts', title: 'Manual Concepts', path: 'fundamentals/manual-concepts' },
+                { id: 'web-mobile-manual-testing', title: 'Web & Mobile Manual Testing', path: 'fundamentals/web-mobile-manual-testing' }
             ]
         },        {
             id: 'automation',
             title: 'Test Automation',
             icon: 'fas fa-robot',
             topics: [
-                { id: 'test-automation-frameworks', title: 'Test Automation Frameworks' },
+                { id: 'test-automation-frameworks', title: 'Test Automation Frameworks', path: 'automation/test-automation-frameworks' },
                 { id: 'playwright-automation-guide', title: 'Playwright Automation Guide', path: 'automation/playwright-automation-guide' },
-                { id: 'api-testing', title: 'API Testing Fundamentals' }
+                { id: 'api-testing', title: 'API Testing Fundamentals', path: 'automation/api-testing' }
             ]
         },{
             id: 'coding',
             title: 'DSA & Coding',
             icon: 'fas fa-code',
             topics: [
-                { id: 'programming-fundamentals', title: 'Programming Fundamentals' },
-                { id: 'data-structures-algorithms', title: 'Data Structures & Algorithms' },
-                { id: 'python-programming', title: 'Python Programming' },
-                { id: 'javascript-programming', title: 'JavaScript Programming' },
-                { id: 'coding-patterns', title: 'Coding Patterns & Techniques' },
-                { id: 'leetcode-practice', title: 'LeetCode Practice Problems' },
-                { id: 'coding-interview-practice', title: 'Coding Interview & Practice' }
+                { id: 'programming-fundamentals', title: 'Programming Fundamentals', path: 'coding/programming-fundamentals' },
+                { id: 'data-structures-algorithms', title: 'Data Structures & Algorithms', path: 'coding/data-structures-algorithms' },
+                { id: 'python-programming', title: 'Python Programming', path: 'coding/python-programming' },
+                { id: 'javascript-programming', title: 'JavaScript Programming', path: 'coding/javascript-programming' },
+                { id: 'coding-patterns', title: 'Coding Patterns & Techniques', path: 'coding/coding-patterns' },
+                { id: 'leetcode-practice', title: 'LeetCode Practice Problems', path: 'coding/leetcode-practice' },
+                { id: 'code-practice', title: 'Code Practice', path: 'coding/code-practice' },
+                { id: 'coding-interview-practice', title: 'Coding Interview & Practice', path: 'coding/coding-interview-practice' }
             ]
         },
         {
@@ -51,9 +52,9 @@ $(document).ready(function() {
             title: 'Processes & Tools',
             icon: 'fas fa-cogs',
             topics: [
-                { id: 'agile-methodology', title: 'Agile Methodology' },
-                { id: 'ci-cd-pipelines', title: 'CI/CD Pipelines for Testing' },
-                { id: 'git-github-actions', title: 'Git & GitHub' }
+                { id: 'agile-methodology', title: 'Agile Methodology', path: 'processes/agile-methodology' },
+                { id: 'ci-cd-pipelines', title: 'CI/CD Pipelines for Testing', path: 'processes/ci-cd-pipelines' },
+                { id: 'git-github-actions', title: 'Git & GitHub', path: 'processes/git-github-actions' }
             ]
         }
     ];
